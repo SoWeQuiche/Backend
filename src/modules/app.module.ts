@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../controllers/app.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AppController } from '../controllers/app.controller';
 import config from '../config';
 import { AuthenticationController } from '../controllers/authentication.controller';
 import { AuthenticationService } from '../services/authentication.service';
@@ -27,5 +27,6 @@ import { GroupService } from '../services/group.service';
     GroupController,
     FileController,
   ],
+  providers: [AppService, AuthenticationService, OrganizationService],
 })
 export class AppModule {}

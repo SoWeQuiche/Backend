@@ -87,4 +87,21 @@ export class AuthenticationService {
         resolve(user);
       });
     });
+
+  appleIdClientSecret = (): string =>
+    jwt.sign(
+      {
+        iss: config.swa.teamId,
+        iat: Date.now(),
+        exp: Date.now() + config.jwt.expirationTime,
+        aud: 'https://appleid.apple.com',
+        sub: config.swa.serviceId,
+      },
+      config.swa.certKey,
+      {
+        keyid: config.swa.keyId,
+        algorithm: 'ES256',
+        // expiresIn: Date.now() + config.jwt.expirationTime,
+      },
+    );
 }
