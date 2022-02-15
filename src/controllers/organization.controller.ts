@@ -19,6 +19,7 @@ import { JWTGuard } from '../guards/jwt.guard';
 import { AdminGuard } from '../guards/admin.guard';
 import { NameDTO } from '../data-transfer-objects/name.dto';
 import { OrganizationAdminGuard } from '../guards/organization-admin.guard';
+import { MailDTO } from '../data-transfer-objects/mail.dto';
 
 @Controller('organizations')
 @ApiTags('Organization')
@@ -44,6 +45,18 @@ export class OrganizationController {
     @Body() parameters: NameDTO,
   ) {
     return this.organizationService.createGroup(organizationId, parameters);
+  }
+
+  @Post('/:organizationId/promote')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiSecurity('Bearer')
+  promoteToAdmin(
+    @Param('organizationId') organizationId: string,
+    @Body() parameters: MailDTO,
+  ) {
+    return this.organizationService.promoteUser(organizationId, parameters);
   }
 
   @Delete('/:organizationId')

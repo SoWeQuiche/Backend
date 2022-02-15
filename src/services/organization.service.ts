@@ -4,12 +4,15 @@ import { GroupRepository } from '../repositories/group.repository';
 import { NameDTO } from 'src/data-transfer-objects/name.dto';
 import { Organization } from 'src/models/organization.model';
 import { User } from '../models/user.model';
+import { MailDTO } from '../data-transfer-objects/mail.dto';
+import { UserRepository } from '../repositories/user.repository';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly organizationRepository: OrganizationRepository,
     private readonly groupRepository: GroupRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   createOrganization = async (parameters: NameDTO): Promise<Organization> => {
@@ -30,12 +33,23 @@ export class OrganizationService {
     }
 
     const group = await this.groupRepository.insert({ name: parameters.name });
-
-    console.log(organization);
     organization.groups.push(group._id);
-    console.log(organization);
 
     return await organization.save();
+  };
+
+  promoteUser = async (
+    organizationId: string,
+    parameters: MailDTO,
+  ): Promise<void> => {
+    const organization = await this.organizationRepository.findOneById(
+      organizationId,
+      { hiddenPropertiesToSelect: ['admins'] },
+    );
+
+    const user = await this.userRepository.findOneBy({ mail: parameters.mail });
+    organization.admins.push(user._id);
+    await organization.save();
   };
 
   deleteGroup = async (organizationId: string) =>
