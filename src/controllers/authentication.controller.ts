@@ -1,14 +1,16 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthenticationService } from '../services/authentication.service';
 import { RegisterDTO } from '../data-transfer-objects/register.dto';
 import { LoginDTO } from '../data-transfer-objects/login.dto';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
+  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { User } from '../models/user.model';
+import { JWTGuard } from '../guards/jwt.guard';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -27,5 +29,12 @@ export class AuthenticationController {
   @ApiBadRequestResponse()
   registerUser(@Body() parameters: RegisterDTO): Promise<User> {
     return this.authenticationService.registerUser(parameters);
+  }
+
+  @Get('me')
+  @UseGuards(JWTGuard)
+  @ApiSecurity('Bearer')
+  me(@Req() request) {
+    return request.user;
   }
 }

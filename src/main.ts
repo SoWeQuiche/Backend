@@ -10,6 +10,11 @@ async function bootstrap() {
     .setTitle('SWQ API Documentation')
     .setDescription('')
     .setVersion('1.0')
+    .addSecurity('Bearer', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    })
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, swaggerDocument);
