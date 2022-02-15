@@ -43,7 +43,7 @@ export class AuthenticationController {
     return request.user;
   }
 
-  @Get('apple-id')
+  @Post('apple-id')
   appleIdWebhook(@Body() body) {
     console.log({ body });
 
