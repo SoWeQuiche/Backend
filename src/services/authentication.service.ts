@@ -56,7 +56,7 @@ export class AuthenticationService {
 
   private createToken = (user: User): string =>
     jwt.sign({ _id: user._id }, config.jwt.secretKey, {
-      expiresIn: config.jwt.tokenExpirationTime,
+      expiresIn: config.jwt.expirationTime,
     });
 
   private comparePassword = async ({
