@@ -66,4 +66,25 @@ export class AuthenticationService {
 
   private encryptPassword = async (password: string): Promise<string> =>
     bCrypt.hash(password, 15);
+
+  verifyUserToken = (bearerToken: string): Promise<User> =>
+    new Promise((resolve, reject) => {
+      jwt.verify(bearerToken, config.jwt.secretKey, async (err, decoded) => {
+        if (err || !decoded) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        const user = await this.userRepository.findOneById(decoded._id);
+
+        if (!user) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        resolve(user);
+      });
+    });
 }
