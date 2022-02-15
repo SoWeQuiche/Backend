@@ -5,10 +5,16 @@ import config from '../config';
 import { AuthenticationController } from '../controllers/authentication.controller';
 import { AuthenticationService } from '../services/authentication.service';
 import { MongoModule } from './mondo.module';
+import { OrganizationController } from '../controllers/organization.controller';
+import { OrganizationService } from 'src/services/organization.service';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
-  providers: [AuthenticationService],
-  controllers: [AppController, AuthenticationController],
+  providers: [AuthenticationService, OrganizationService],
+  controllers: [
+    AppController,
+    AuthenticationController,
+    OrganizationController,
+  ],
 })
 export class AppModule {}
