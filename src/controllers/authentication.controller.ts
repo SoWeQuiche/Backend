@@ -45,24 +45,37 @@ export class AuthenticationController {
     return request.user;
   }
 
+  @Get('apple-client-secret')
+  getAppleClientSecret() {
+    return this.authenticationService.appleIdClientSecret();
+  }
+
   @Post('apple-id')
   appleIdWebhook(@Body() body: SwaDto) {
     console.log({ body });
 
-    const appleToken = axios.post('https://appleid.apple.com/auth/token', {
-      grant_type: 'authorization_code',
-      code: body.code,
-      redirect_uri: 'https://api.sign.quiches.ovh/auth/test',
-      client_id: config.swa.serviceId,
-      client_secret: this.authenticationService.appleIdClientSecret(),
-    });
+    try {
+      jwt.verify(body.id_token);
 
-    const decodedToken = jwt.decode(body.id_token);
+      const decodedToken = jwt.decode(body.id_token);
 
-    return {
-      userEmail: decodedToken.email,
-      appleToken,
-    };
+      const appleToken = axios.post('https://appleid.apple.com/auth/token', {
+        client_id: config.swa.serviceId,
+        client_secret: this.authenticationService.appleIdClientSecret(),
+        code: body.code,
+        grant_type: 'authorization_code',
+        redirect_uri: 'https://api.sign.quiches.ovh/auth/test',
+      });
+
+      return {
+        userEmail: decodedToken.email,
+        appleToken,
+      };
+    } catch (err) {
+      return {
+        err,
+      };
+    }
   }
 
   @Get('apple-id-authorization-url')

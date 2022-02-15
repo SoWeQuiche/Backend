@@ -101,7 +101,6 @@ export class AuthenticationService {
       {
         keyid: config.swa.keyId,
         algorithm: 'ES256',
-        // expiresIn: Date.now() + config.jwt.expirationTime,
       },
     );
 }
