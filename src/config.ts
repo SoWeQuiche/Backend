@@ -6,4 +6,8 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
 export default {
   port: process.env.PORT,
   mongoUrl: process.env.MONGO_URL,
+  jwt: {
+    secretKey: 'YoMan',
+    tokenExpirationTime: 123,
+  },
 };
