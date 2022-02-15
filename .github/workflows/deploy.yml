@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - feature/swa
   workflow_dispatch:
 
 jobs:
