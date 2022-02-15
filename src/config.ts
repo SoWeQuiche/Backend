@@ -6,6 +6,6 @@ export default {
   mongoUrl: process.env.MONGO_URL,
   jwt: {
     secretKey: 'YoMan',
-    tokenExpirationTime: 123,
+    tokenExpirationTime: 15552000,
   },
 };

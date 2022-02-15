@@ -12,10 +12,22 @@ export class Organization {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true, type: [Types.ObjectId], ref: User.name, default: [] })
+  @Prop({
+    required: true,
+    type: [Types.ObjectId],
+    ref: User.name,
+    default: [],
+    select: false,
+  })
   admins: Types.ObjectId[];
 
-  @Prop({ required: true, type: [Types.ObjectId], ref: User.name, default: [] })
+  @Prop({
+    required: true,
+    type: [Types.ObjectId],
+    ref: User.name,
+    default: [],
+    select: false,
+  })
   users: Types.ObjectId[];
 
   @Prop({
@@ -23,6 +35,7 @@ export class Organization {
     type: [Types.ObjectId],
     ref: Group.name,
     default: [],
+    select: false,
   })
   groups: Types.ObjectId[];
 
