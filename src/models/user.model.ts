@@ -14,13 +14,10 @@ export class User {
   password: string;
 
   @Prop({ required: true })
-  firstName: string;
+  firstname: string;
 
   @Prop({ required: true })
-  lastName: string;
-
-  @Prop()
-  registrationDate?: number;
+  lastname: string;
 
   @Prop({ default: false })
   isActive: boolean;
