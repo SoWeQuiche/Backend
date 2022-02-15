@@ -10,12 +10,14 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import axios from 'axios';
+import * as jwt from 'jsonwebtoken';
 import { AuthenticationService } from '../services/authentication.service';
 import { RegisterDTO } from '../data-transfer-objects/register.dto';
 import { LoginDTO } from '../data-transfer-objects/login.dto';
 import { User } from '../models/user.model';
 import { JWTGuard } from '../guards/jwt.guard';
 import config from '../config';
+import { SwaDto } from 'src/data-transfer-objects/swa.dto';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -44,18 +46,23 @@ export class AuthenticationController {
   }
 
   @Post('apple-id')
-  appleIdWebhook(@Body() body) {
+  appleIdWebhook(@Body() body: SwaDto) {
     console.log({ body });
 
     const appleToken = axios.post('https://appleid.apple.com/auth/token', {
       grant_type: 'authorization_code',
       code: body.code,
-      redirect_uri: body.redirect_uri,
+      redirect_uri: 'https://api.sign.quiches.ovh/auth/test',
       client_id: config.swa.serviceId,
       client_secret: this.authenticationService.appleIdClientSecret(),
     });
 
-    return appleToken;
+    const decodedToken = jwt.decode(body.id_token);
+
+    return {
+      userEmail: decodedToken.email,
+      appleToken,
+    };
   }
 
   @Get('apple-id-authorization-url')
@@ -78,5 +85,11 @@ export class AuthenticationController {
       .join('&');
 
     return `${baseUrl}?${searchParams}`;
+  }
+
+  @Get('test')
+  @Post('test')
+  test(@Body() body) {
+    console.log({ body });
   }
 }
