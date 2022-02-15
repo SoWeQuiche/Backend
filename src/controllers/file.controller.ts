@@ -8,12 +8,14 @@ import {
   Res,
   StreamableFile,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AWSService } from '../services/aws.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiFile } from '../decorators/ApiFile';
+import { JWTGuard } from '../guards/jwt.guard';
 
 @Controller('files')
 @ApiTags('File')
@@ -22,6 +24,7 @@ export class FileController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JWTGuard)
   @ApiConsumes('multipart/form-data')
   @ApiFile('file')
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
@@ -29,6 +32,7 @@ export class FileController {
   }
 
   @Get(':key')
+  @UseGuards(JWTGuard)
   async getFile(@Param('key') key: string, @Res() res) {
     const file = await this.awsService.getFile(key);
 
