@@ -8,4 +8,9 @@ export default {
     secretKey: 'YoMan',
     tokenExpirationTime: 15552000,
   },
+  aws: {
+    id: process.env.AWS_ID,
+    secret: process.env.AWS_SECRET,
+    bucketName: process.env.AWS_BUCKET_NAME,
+  },
 };
