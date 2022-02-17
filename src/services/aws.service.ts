@@ -18,7 +18,7 @@ export class AWSService {
     });
   }
 
-  uploadFile = async (file: Express.Multer.File, originUrl: string) => {
+  uploadFile = async (file: Express.Multer.File) => {
     const params = {
       Bucket: config.aws.bucketName,
       Key: file.originalname,
@@ -28,7 +28,7 @@ export class AWSService {
     try {
       const result = await this.s3.upload(params).promise();
 
-      const url = `${originUrl}/files/${result.Key}`;
+      const url = `${config.apiUrl}/files/${result.Key}`;
 
       return this.fileRepository.insert({
         url,
