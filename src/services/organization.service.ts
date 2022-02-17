@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/origanization.repository';
 import { GroupRepository } from '../repositories/group.repository';
-import { NameDTO } from 'src/dto/name.dto';
-import { Organization } from 'src/models/organization.model';
+import { NameDTO } from '../dto/name.dto';
+import { Organization } from '../models/organization.model';
 import { User } from '../models/user.model';
 import { MailDTO } from '../dto/mail.dto';
 import { UserRepository } from '../repositories/user.repository';

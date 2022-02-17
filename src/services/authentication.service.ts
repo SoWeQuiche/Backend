@@ -9,7 +9,7 @@ import { LoginDTO } from '../dto/login.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { User } from '../models/user.model';
 import config from '../config';
-import { RegisterDTO } from 'src/dto/register.dto';
+import { RegisterDTO } from '../dto/register.dto';
 
 @Injectable()
 export class AuthenticationService {

@@ -6,7 +6,7 @@ import { AuthenticationController } from '../controllers/authentication.controll
 import { AuthenticationService } from '../services/authentication.service';
 import { MongoModule } from './mondo.module';
 import { OrganizationController } from '../controllers/organization.controller';
-import { OrganizationService } from 'src/services/organization.service';
+import { OrganizationService } from '../services/organization.service';
 import { AWSService } from '../services/aws.service';
 import { FileController } from '../controllers/file.controller';
 import { GroupController } from '../controllers/group.controller';
