@@ -71,8 +71,8 @@ export class AuthenticationService {
 
     const user = await this.userRepository.insert({
       mail: decodedToken.email,
-      firstname: parameters.firstname,
-      lastname: parameters.lastname,
+      firstname: parameters.user.name.firstName,
+      lastname: parameters.user.name.lastName,
     });
 
     return { token: this.createToken(user) };
@@ -140,35 +140,4 @@ export class AuthenticationService {
 
     return user;
   };
-
-  appleIdClientSecret = (): string => {
-    const token = jwt.sign(
-      {
-        iss: config.swa.teamId,
-        // iat: Date.now(),
-        aud: 'https://appleid.apple.com',
-        sub: config.swa.serviceId,
-      },
-      config.swa.certKey,
-      {
-        algorithm: 'ES256',
-        expiresIn: '24h',
-        header: {
-          kid: config.swa.keyId,
-          typ: undefined,
-        },
-      },
-    );
-
-    return token;
-  };
-
-  // refreshAppleToken = async (tokenCode: string): Promise<string> =>
-  //   await axios.post('https://appleid.apple.com/auth/token', {
-  //     client_id: config.swa.serviceId,
-  //     client_secret: this.appleIdClientSecret(),
-  //     code: tokenCode,
-  //     grant_type: 'authorization_code',
-  //     redirect_uri: 'https://api.sign.quiches.ovh/auth/test',
-  //   });
 }
