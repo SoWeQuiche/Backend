@@ -6,16 +6,29 @@ import { OrganizationRepository } from '../repositories/origanization.repository
 import { Organization, OrganizationSchema } from '../models/organization.model';
 import { Group, GroupSchema } from '../models/group.model';
 import { GroupRepository } from '../repositories/group.repository';
+import { File, FileSchema } from '../models/file.model';
+import { FileRepository } from '../repositories/file.repository';
 
 @Module({
   imports: [
     NestMongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    NestMongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
     NestMongooseModule.forFeature([{ name: Group.name, schema: GroupSchema }]),
     NestMongooseModule.forFeature([
       { name: Organization.name, schema: OrganizationSchema },
     ]),
   ],
-  providers: [UserRepository, OrganizationRepository, GroupRepository],
-  exports: [UserRepository, OrganizationRepository, GroupRepository],
+  providers: [
+    UserRepository,
+    OrganizationRepository,
+    GroupRepository,
+    FileRepository,
+  ],
+  exports: [
+    UserRepository,
+    OrganizationRepository,
+    GroupRepository,
+    FileRepository,
+  ],
 })
 export class MongoModule {}

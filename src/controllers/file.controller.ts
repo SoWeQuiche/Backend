@@ -1,12 +1,9 @@
 import {
-  BadRequestException,
   Controller,
   Get,
   Param,
   Post,
-  Req,
   Res,
-  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -39,8 +36,8 @@ export class FileController {
   @ApiUnauthorizedResponse()
   @ApiBadRequestResponse()
   @ApiSecurity('Bearer')
-  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
-    return this.awsService.uploadFile(file, req.get('origin'));
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.awsService.uploadFile(file);
   }
 
   @Get(':key')

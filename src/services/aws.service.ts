@@ -5,20 +5,20 @@ import {
 } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import config from '../config';
-import * as fs from 'fs';
+import { FileRepository } from '../repositories/file.repository';
 
 @Injectable()
 export class AWSService {
   private readonly s3: S3;
 
-  constructor() {
+  constructor(private readonly fileRepository: FileRepository) {
     this.s3 = new S3({
       accessKeyId: config.aws.id,
       secretAccessKey: config.aws.secret,
     });
   }
 
-  uploadFile = async (file: Express.Multer.File, originUrl: string) => {
+  uploadFile = async (file: Express.Multer.File) => {
     const params = {
       Bucket: config.aws.bucketName,
       Key: file.originalname,
@@ -28,7 +28,13 @@ export class AWSService {
     try {
       const result = await this.s3.upload(params).promise();
 
-      return { url: `${originUrl}/files/${result.Key}` };
+      const url = `${config.apiUrl}/files/${result.Key}`;
+
+      return this.fileRepository.insert({
+        url,
+        filename: file.originalname,
+        type: file.mimetype,
+      });
     } catch (e) {
       console.log(e);
       throw new BadRequestException();
