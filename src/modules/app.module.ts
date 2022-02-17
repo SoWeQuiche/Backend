@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../controllers/app.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AppController } from '../controllers/app.controller';
 import config from '../config';
 import { AuthenticationController } from '../controllers/authentication.controller';
 import { AuthenticationService } from '../services/authentication.service';
@@ -11,10 +11,12 @@ import { AWSService } from '../services/aws.service';
 import { FileController } from '../controllers/file.controller';
 import { GroupController } from '../controllers/group.controller';
 import { GroupService } from '../services/group.service';
+import { AppService } from '../services/app.service';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
   providers: [
+    AppService,
     AuthenticationService,
     OrganizationService,
     GroupService,
