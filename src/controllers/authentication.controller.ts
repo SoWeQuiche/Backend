@@ -88,7 +88,7 @@ export class AuthenticationController {
       client_id: config.swa.serviceId,
       redirect_uri: 'https://api.sign.quiches.ovh/auth/apple-id',
       // state: '32ba49aa07', // TODO: need generation
-      scope: 'name email',
+      scope: 'fullName email',
     };
 
     const searchParams = Object.keys(params)
