@@ -10,7 +10,7 @@ import { MailDTO } from '../dto/mail.dto';
 import { GroupService } from '../services/group.service';
 import { GroupAdminGuard } from '../guards/group-admin.guard';
 
-@Controller('group')
+@Controller('groups')
 @ApiTags('Group')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
