@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import * as bCrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { LoginDTO } from '../data-transfer-objects/login.dto';
+import { LoginDTO } from '../dto/login.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { User } from '../models/user.model';
 import config from '../config';
-import { RegisterDTO } from 'src/data-transfer-objects/register.dto';
+import { RegisterDTO } from 'src/dto/register.dto';
 
 @Injectable()
 export class AuthenticationService {

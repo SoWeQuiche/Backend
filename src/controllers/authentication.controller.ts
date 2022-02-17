@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthenticationService } from '../services/authentication.service';
-import { RegisterDTO } from '../data-transfer-objects/register.dto';
-import { LoginDTO } from '../data-transfer-objects/login.dto';
+import { RegisterDTO } from '../dto/register.dto';
+import { LoginDTO } from '../dto/login.dto';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
