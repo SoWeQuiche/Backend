@@ -3,7 +3,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import axios from 'axios';
 import * as bCrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as jwksClient from 'jwks-rsa';

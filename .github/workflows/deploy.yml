@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - feature/apple-auth-token
   workflow_dispatch:
 
 jobs:
