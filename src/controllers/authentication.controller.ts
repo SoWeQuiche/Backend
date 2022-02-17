@@ -54,7 +54,7 @@ export class AuthenticationController {
       response_type: 'code id_token',
       response_mode: 'form_post',
       client_id: config.swa.serviceId,
-      redirect_uri: 'https://api.sign.quiches.ovh/auth/apple-id',
+      redirect_uri: 'https://api.sign.quiches.ovh/auth/login/apple-id',
       // state: '32ba49aa07', // TODO: need generation
       scope: 'fullname email',
     };
