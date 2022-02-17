@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import axios from 'axios';
 import * as bCrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as jwksClient from 'jwks-rsa';
@@ -11,6 +12,8 @@ import { UserRepository } from '../repositories/user.repository';
 import { User } from '../models/user.model';
 import config from '../config';
 import { RegisterDTO } from '../dto/register.dto';
+import { SwaIdToken } from '../dto/swa-id-token.dto';
+import { SwaDTO } from '../dto/swa.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -37,7 +40,7 @@ export class AuthenticationService {
     return this.userRepository.findOneById(user._id);
   };
 
-  login = async (parameters: LoginDTO) => {
+  login = async (parameters: LoginDTO): Promise<{ token: string }> => {
     const user = await this.userRepository.findOneBy(
       { mail: parameters.mail },
       { hiddenPropertiesToSelect: ['password'] },
@@ -55,8 +58,28 @@ export class AuthenticationService {
     return { token: this.createToken(user) };
   };
 
+  loginWithApple = async (parameters: SwaDTO): Promise<{ token: string }> => {
+    const decodedToken = await this.verifyAppleToken(parameters.id_token);
+
+    const existingUser = await this.userRepository.findOneBy({
+      mail: decodedToken.email,
+    });
+
+    if (existingUser) {
+      return { token: this.createToken(existingUser) };
+    }
+
+    const user = await this.userRepository.insert({
+      mail: decodedToken.email,
+      firstname: parameters.firstname,
+      lastname: parameters.lastname,
+    });
+
+    return { token: this.createToken(user) };
+  };
+
   private createToken = (user: User): string =>
-    jwt.sign({ _id: user._id }, config.jwt.secretKey, {
+    jwt.sign({ _id: user._id, email: user.mail }, config.jwt.secretKey, {
       expiresIn: config.jwt.expirationTime,
     });
 
@@ -68,7 +91,7 @@ export class AuthenticationService {
   private encryptPassword = async (password: string): Promise<string> =>
     bCrypt.hash(password, 15);
 
-  private verifyAppToken = async (token: string): Promise<User> =>
+  private verifyAppToken = async (token: string): Promise<{ _id: string }> =>
     new Promise((resolve, reject) => {
       jwt.verify(token, config.jwt.secretKey, async (err, decoded) => {
         if (err || !decoded) {
@@ -77,76 +100,69 @@ export class AuthenticationService {
           return;
         }
 
-        const user = await this.userRepository.findOneById(decoded._id);
+        resolve(decoded);
+      });
+    });
 
-        if (!user) {
+  private getAppleJwtSigningKey = (header, callback) => {
+    const client = jwksClient({
+      jwksUri: 'https://appleid.apple.com/auth/keys',
+    });
+
+    client.getSigningKey(header.kid, function (err, key: any) {
+      const signingKey = key.publicKey || key.rsaPublicKey;
+
+      callback(null, signingKey);
+    });
+  };
+
+  private verifyAppleToken = async (token: string): Promise<SwaIdToken> =>
+    new Promise((resolve, reject) => {
+      jwt.verify(token, this.getAppleJwtSigningKey, async (err, decoded) => {
+        if (err || !decoded) {
           reject(new UnauthorizedException());
 
           return;
         }
 
-        resolve(user);
+        resolve(decoded);
       });
-    });
-
-  private verifyAppleToken = async (token: string): Promise<any> =>
-    new Promise((resolve, reject) => {
-      const client = jwksClient({
-        jwksUri: 'https://appleid.apple.com/auth/keys',
-      });
-
-      jwt.verify(
-        token,
-        (header, callback) =>
-          client.getSigningKey(header.kid, function (err, key: any) {
-            const signingKey = key.publicKey || key.rsaPublicKey;
-            callback(null, signingKey);
-          }),
-        async (err, decoded) => {
-          if (err || !decoded) {
-            reject(new UnauthorizedException());
-
-            return;
-          }
-
-          const user = await this.userRepository.findOneById(decoded._id);
-
-          if (!user) {
-            reject(new UnauthorizedException());
-
-            return;
-          }
-
-          resolve(user);
-        },
-      );
     });
 
   verifyUserToken = async (bearerToken: string): Promise<User> => {
-    const { aud } = jwt.decode(bearerToken);
+    const decodedToken = await this.verifyAppToken(bearerToken);
 
-    if (aud === 'com.maxencemottard.swq.swa') {
-      const user = await this.verifyAppleToken(bearerToken);
-      return user;
+    const user = await this.userRepository.findOneById(decodedToken._id);
+
+    if (!user) {
+      throw new UnauthorizedException();
     }
 
-    const user = await this.verifyAppToken(bearerToken);
     return user;
   };
 
-  appleIdClientSecret = (): string =>
-    jwt.sign(
-      {
-        iss: config.swa.teamId,
-        iat: Date.now(),
-        exp: Date.now() + config.jwt.expirationTime,
-        aud: 'https://appleid.apple.com',
-        sub: config.swa.serviceId,
-      },
-      config.swa.certKey,
-      {
-        keyid: config.swa.keyId,
-        algorithm: 'ES256',
-      },
-    );
+  // private appleIdClientSecret = (): string =>
+  //   jwt.sign(
+  //     {
+  //       iss: config.swa.teamId,
+  //       iat: Date.now(),
+  //       exp: Date.now() + config.jwt.expirationTime,
+  //       aud: 'https://appleid.apple.com',
+  //       sub: config.swa.serviceId,
+  //     },
+  //     config.swa.certKey,
+  //     {
+  //       keyid: config.swa.keyId,
+  //       algorithm: 'ES256',
+  //     },
+  //   );
+
+  // private refreshAppleToken = async (tokenCode: string): Promise<string> =>
+  //   await axios.post('https://appleid.apple.com/auth/token', {
+  //     client_id: config.swa.serviceId,
+  //     client_secret: this.appleIdClientSecret(),
+  //     code: tokenCode,
+  //     grant_type: 'authorization_code',
+  //     redirect_uri: 'https://api.sign.quiches.ovh/auth/test',
+  //   });
 }
