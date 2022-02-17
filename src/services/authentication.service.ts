@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import * as bCrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import * as jwksClient from 'jwks-rsa';
 import { LoginDTO } from '../dto/login.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { User } from '../models/user.model';
@@ -67,9 +68,9 @@ export class AuthenticationService {
   private encryptPassword = async (password: string): Promise<string> =>
     bCrypt.hash(password, 15);
 
-  verifyUserToken = (bearerToken: string): Promise<User> =>
+  private verifyAppToken = async (token: string): Promise<User> =>
     new Promise((resolve, reject) => {
-      jwt.verify(bearerToken, config.jwt.secretKey, async (err, decoded) => {
+      jwt.verify(token, config.jwt.secretKey, async (err, decoded) => {
         if (err || !decoded) {
           reject(new UnauthorizedException());
 
@@ -87,6 +88,51 @@ export class AuthenticationService {
         resolve(user);
       });
     });
+
+  private verifyAppleToken = async (token: string): Promise<any> =>
+    new Promise((resolve, reject) => {
+      const client = jwksClient({
+        jwksUri: 'https://appleid.apple.com/auth/keys',
+      });
+
+      jwt.verify(
+        token,
+        (header, callback) =>
+          client.getSigningKey(header.kid, function (err, key: any) {
+            const signingKey = key.publicKey || key.rsaPublicKey;
+            callback(null, signingKey);
+          }),
+        async (err, decoded) => {
+          if (err || !decoded) {
+            reject(new UnauthorizedException());
+
+            return;
+          }
+
+          const user = await this.userRepository.findOneById(decoded._id);
+
+          if (!user) {
+            reject(new UnauthorizedException());
+
+            return;
+          }
+
+          resolve(user);
+        },
+      );
+    });
+
+  verifyUserToken = async (bearerToken: string): Promise<User> => {
+    const { aud } = jwt.decode(bearerToken);
+
+    if (aud === 'com.maxencemottard.swq.swa') {
+      const user = await this.verifyAppleToken(bearerToken);
+      return user;
+    }
+
+    const user = await this.verifyAppToken(bearerToken);
+    return user;
+  };
 
   appleIdClientSecret = (): string =>
     jwt.sign(
