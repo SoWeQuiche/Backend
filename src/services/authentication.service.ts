@@ -145,36 +145,20 @@ export class AuthenticationService {
     const token = jwt.sign(
       {
         iss: config.swa.teamId,
-        iat: Date.now(),
-        exp: Date.now() + config.jwt.expirationTime,
+        // iat: Date.now(),
         aud: 'https://appleid.apple.com',
         sub: config.swa.serviceId,
       },
       config.swa.certKey,
       {
         algorithm: 'ES256',
+        expiresIn: '24h',
         header: {
-          alg: 'ES256',
           kid: config.swa.keyId,
+          typ: undefined,
         },
       },
     );
-
-    // const headers = {
-    //   kid: process.env.KEY_ID,
-    //   typ: undefined, // is there another way to remove type?
-    // };
-    // const claims = {
-    //   iss: process.env.TEAM_ID,
-    //   aud: 'https://appleid.apple.com',
-    //   sub: process.env.CLIENT_ID,
-    // };
-
-    // token = jwt.sign(claims, config.swa.certKey, {
-    //   algorithm: 'ES256',
-    //   header: headers,
-    //   expiresIn: '24h',
-    // });
 
     return token;
   };
