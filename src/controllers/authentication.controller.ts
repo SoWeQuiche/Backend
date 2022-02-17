@@ -41,7 +41,8 @@ export class AuthenticationController {
   }
 
   @Post('/login/apple-id')
-  async appleIdWebhook(@Body() body: SwaDTO): Promise<{ token: string }> {
+  async appleIdWebhook(@Body() body: any): Promise<{ token: string }> {
+    console.log({ body });
     return this.authenticationService.loginWithApple(body);
   }
 
