@@ -1,7 +1,4 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { AuthenticationService } from '../services/authentication.service';
-import { RegisterDTO } from '../dto/register.dto';
-import { LoginDTO } from '../dto/login.dto';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
@@ -10,12 +7,12 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthenticationService } from '../services/authentication.service';
-import { RegisterDTO } from '../data-transfer-objects/register.dto';
-import { LoginDTO } from '../data-transfer-objects/login.dto';
+import { RegisterDTO } from '../dto/register.dto';
+import { LoginDTO } from '../dto/login.dto';
+import { SwaDTO } from '../dto/swa.dto';
 import { User } from '../models/user.model';
 import { JWTGuard } from '../guards/jwt.guard';
 import config from '../config';
-import { SwaDTO } from '../data-transfer-objects/swa.dto';
 
 @Controller('auth')
 @ApiTags('Authentication')
