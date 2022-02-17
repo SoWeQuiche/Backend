@@ -16,7 +16,7 @@ import { AppService } from '../services/app.service';
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
   providers: [
-	AppService,
+    AppService,
     AuthenticationService,
     OrganizationService,
     GroupService,

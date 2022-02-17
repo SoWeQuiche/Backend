@@ -59,9 +59,7 @@ export class AuthenticationController {
     };
 
     const searchParams = Object.keys(params)
-      .map((key) => {
-        return `${key}=${encodeURIComponent(params[key])}`;
-      })
+      .map((key) => `${key}=${encodeURIComponent(params[key])}`)
       .join('&');
 
     return `${baseUrl}?${searchParams}`;

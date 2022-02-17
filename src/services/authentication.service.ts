@@ -78,7 +78,7 @@ export class AuthenticationService {
   };
 
   private createToken = (user: User): string =>
-    jwt.sign({ _id: user._id, email: user.mail }, config.jwt.secretKey, {
+    jwt.sign({ _id: user._id }, config.jwt.secretKey, {
       expiresIn: config.jwt.expirationTime,
     });
 
