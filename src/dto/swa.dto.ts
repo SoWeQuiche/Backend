@@ -1,6 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 // import { IsEmail, IsNotEmpty } from 'class-validator';
 
+class SwaUserNameDTO {
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+}
+
+class SwaUserDTO {
+  @ApiProperty()
+  name: SwaUserNameDTO;
+  @ApiProperty()
+  email: string;
+}
+
 export class SwaDTO {
   @ApiProperty()
   // // @IsNotEmpty()
@@ -11,10 +26,5 @@ export class SwaDTO {
   id_token: string;
 
   @ApiProperty()
-  // @IsNotEmpty()
-  firstname: string;
-
-  @ApiProperty()
-  // @IsNotEmpty()
-  lastname: string;
+  user: SwaUserDTO;
 }
