@@ -6,17 +6,25 @@ import { AuthenticationController } from '../controllers/authentication.controll
 import { AuthenticationService } from '../services/authentication.service';
 import { MongoModule } from './mondo.module';
 import { OrganizationController } from '../controllers/organization.controller';
-import { OrganizationService } from 'src/services/organization.service';
+import { OrganizationService } from '../services/organization.service';
 import { AWSService } from '../services/aws.service';
 import { FileController } from '../controllers/file.controller';
+import { GroupController } from '../controllers/group.controller';
+import { GroupService } from '../services/group.service';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
-  providers: [AuthenticationService, OrganizationService, AWSService],
+  providers: [
+    AuthenticationService,
+    OrganizationService,
+    GroupService,
+    AWSService,
+  ],
   controllers: [
     AppController,
     AuthenticationController,
     OrganizationController,
+    GroupController,
     FileController,
   ],
 })
