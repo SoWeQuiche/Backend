@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import axios from 'axios';
 import * as bCrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as jwksClient from 'jwks-rsa';
@@ -140,23 +141,45 @@ export class AuthenticationService {
     return user;
   };
 
-  // private appleIdClientSecret = (): string =>
-  //   jwt.sign(
-  //     {
-  //       iss: config.swa.teamId,
-  //       iat: Date.now(),
-  //       exp: Date.now() + config.jwt.expirationTime,
-  //       aud: 'https://appleid.apple.com',
-  //       sub: config.swa.serviceId,
-  //     },
-  //     config.swa.certKey,
-  //     {
-  //       keyid: config.swa.keyId,
-  //       algorithm: 'ES256',
-  //     },
-  //   );
+  appleIdClientSecret = (): string => {
+    const token = jwt.sign(
+      {
+        iss: config.swa.teamId,
+        iat: Date.now(),
+        exp: Date.now() + config.jwt.expirationTime,
+        aud: 'https://appleid.apple.com',
+        sub: config.swa.serviceId,
+      },
+      config.swa.certKey,
+      {
+        algorithm: 'ES256',
+        header: {
+          alg: 'ES256',
+          kid: config.swa.keyId,
+        },
+      },
+    );
 
-  // private refreshAppleToken = async (tokenCode: string): Promise<string> =>
+    // const headers = {
+    //   kid: process.env.KEY_ID,
+    //   typ: undefined, // is there another way to remove type?
+    // };
+    // const claims = {
+    //   iss: process.env.TEAM_ID,
+    //   aud: 'https://appleid.apple.com',
+    //   sub: process.env.CLIENT_ID,
+    // };
+
+    // token = jwt.sign(claims, config.swa.certKey, {
+    //   algorithm: 'ES256',
+    //   header: headers,
+    //   expiresIn: '24h',
+    // });
+
+    return token;
+  };
+
+  // refreshAppleToken = async (tokenCode: string): Promise<string> =>
   //   await axios.post('https://appleid.apple.com/auth/token', {
   //     client_id: config.swa.serviceId,
   //     client_secret: this.appleIdClientSecret(),
