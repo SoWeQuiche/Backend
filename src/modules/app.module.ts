@@ -11,10 +11,12 @@ import { AWSService } from '../services/aws.service';
 import { FileController } from '../controllers/file.controller';
 import { GroupController } from '../controllers/group.controller';
 import { GroupService } from '../services/group.service';
+import { AppService } from '../services/app.service';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
   providers: [
+	AppService,
     AuthenticationService,
     OrganizationService,
     GroupService,
@@ -27,6 +29,5 @@ import { GroupService } from '../services/group.service';
     GroupController,
     FileController,
   ],
-  providers: [AppService, AuthenticationService, OrganizationService],
 })
 export class AppModule {}
