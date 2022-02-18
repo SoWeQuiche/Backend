@@ -1,9 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/origanization.repository';
 import { GroupRepository } from '../repositories/group.repository';
 import { MailDTO } from '../dto/mail.dto';
 import { AuthenticationService } from './authentication.service';
 import { MailService } from './mail.service';
+import { NameDTO } from '../dto/name.dto';
+import { Group } from '../models/group.model';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class GroupService {
@@ -13,6 +20,34 @@ export class GroupService {
     private readonly authenticationService: AuthenticationService,
     private readonly mailService: MailService,
   ) {}
+
+  createGroup = async (
+    organizationId: string,
+    parameters: NameDTO,
+  ): Promise<Group> => {
+    const organization = await this.organizationRepository.findOneById(
+      organizationId,
+      { hiddenPropertiesToSelect: ['groups'] },
+    );
+
+    if (!organization) throw new NotFoundException('Organization not found');
+
+    const group = await this.groupRepository.insert({
+      name: parameters.name,
+      organization: organization._id,
+    });
+    if (!group) throw new BadRequestException('Group not created');
+
+    return group;
+  };
+
+  getGroupsForOrganization = async (organizationId: string) =>
+    this.groupRepository.findManyBy({
+      organization: new Types.ObjectId(organizationId),
+    });
+
+  deleteGroup = (groupId: string) =>
+    this.groupRepository.deleteOnyBy({ _id: groupId });
 
   promoteUser = async (groupId: string, parameters: MailDTO): Promise<void> => {
     const group = await this.groupRepository.findOneById(groupId, {

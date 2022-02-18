@@ -26,26 +26,6 @@ export class OrganizationService {
     return this.organizationRepository.insert(parameters);
   };
 
-  createGroup = async (
-    organizationId: string,
-    parameters: NameDTO,
-  ): Promise<Group> => {
-    const organization = await this.organizationRepository.findOneById(
-      organizationId,
-      { hiddenPropertiesToSelect: ['groups'] },
-    );
-
-    if (!organization) throw new NotFoundException('Organization not found');
-
-    const group = await this.groupRepository.insert({
-      name: parameters.name,
-      organization: organization._id,
-    });
-    if (!group) throw new BadRequestException('Group not created');
-
-    return group;
-  };
-
   promoteUser = async (
     organizationId: string,
     parameters: MailDTO,
@@ -92,7 +72,7 @@ export class OrganizationService {
     }
   };
 
-  deleteGroup = async (organizationId: string) =>
+  deleteOrganization = async (organizationId: string) =>
     this.organizationRepository.deleteOnyBy({ _id: organizationId });
 
   listManagedOrganizations = async (user: User): Promise<Organization[]> => {
@@ -109,7 +89,6 @@ export class OrganizationService {
     organizationId: string,
   ): Promise<Organization> => {
     return this.organizationRepository.findOneById(organizationId, {
-      populate: ['groups'],
       hiddenPropertiesToSelect: ['admins', 'users'],
     });
   };
