@@ -14,6 +14,7 @@ export class GroupAdminGuard implements CanActivate {
 
     return !(
       !group.organization ||
+      // @ts-ignore
       (!group.organization.admins.includes(request.user._id) &&
         !request.user.isAdmin)
     );
