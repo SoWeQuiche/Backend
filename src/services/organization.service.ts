@@ -9,9 +9,9 @@ import { NameDTO } from '../dto/name.dto';
 import { Organization } from '../models/organization.model';
 import { User } from '../models/user.model';
 import { MailDTO } from '../dto/mail.dto';
-import { MailService, MailTemplate } from './mail.service';
+import { MailService } from './mail.service';
 import { AuthenticationService } from './authentication.service';
-import config from '../config';
+import { Group } from '../models/group.model';
 
 @Injectable()
 export class OrganizationService {
@@ -29,7 +29,7 @@ export class OrganizationService {
   createGroup = async (
     organizationId: string,
     parameters: NameDTO,
-  ): Promise<Organization> => {
+  ): Promise<Group> => {
     const organization = await this.organizationRepository.findOneById(
       organizationId,
       { hiddenPropertiesToSelect: ['groups'] },
@@ -37,13 +37,13 @@ export class OrganizationService {
 
     if (!organization) throw new NotFoundException('Organization not found');
 
-    const group = await this.groupRepository.insert({ name: parameters.name });
+    const group = await this.groupRepository.insert({
+      name: parameters.name,
+      organization: organization._id,
+    });
     if (!group) throw new BadRequestException('Group not created');
 
-    if (!organization.groups.includes(group._id)) {
-      organization.groups.push(group._id);
-      return await organization.save();
-    } else return organization;
+    return group;
   };
 
   promoteUser = async (
@@ -78,10 +78,13 @@ export class OrganizationService {
       { hiddenPropertiesToSelect: ['users'] },
     );
 
-    const user = await this.authenticationService.findUserByMail(
-      parameters.mail,
-    );
-    if (!user) throw new BadRequestException('User not found');
+    let user = await this.authenticationService.findUserByMail(parameters.mail);
+
+    if (!user) {
+      user = await this.authenticationService.registerUser(parameters.mail);
+
+      await this.mailService.sendActivationMail(user, organization);
+    }
 
     if (!organization.users.includes(user._id)) {
       organization.users.push(user._id);

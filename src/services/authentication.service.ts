@@ -38,12 +38,13 @@ export class AuthenticationService {
       activationCode: parameters.code,
     });
 
-    if (!!user) {
+    if (!user || user.isActive) {
       throw new BadRequestException();
     }
 
     user.firstname = parameters.firstname;
     user.lastname = parameters.lastname;
+    user.password = await this.encryptPassword(parameters.password);
     user.isActive = true;
     user.activationCode = undefined;
 
