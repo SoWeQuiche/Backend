@@ -20,6 +20,7 @@ class SwaAuthorizationDTO {
   @ApiProperty()
   // // @IsNotEmpty()
   code: string;
+  w;
 
   @ApiProperty()
   // @IsNotEmpty()

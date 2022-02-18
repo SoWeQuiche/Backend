@@ -142,3 +142,15 @@ export class AuthenticationService {
     return user;
   };
 }
+
+const test = {
+  authorization: {
+    code: 'c53ffeda9250a4b3a892f6bc70539f9cc.0.rrxsx.JdNfCDupal3CjNDgYgK4eQ',
+    id_token:
+      'eyJraWQiOiJZdXlYb1kiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm1heGVuY2Vtb3R0YXJkLnN3cS5zd2EiLCJleHAiOjE2NDUyNjA4MzksImlhdCI6MTY0NTE3NDQzOSwic3ViIjoiMDAxNzI3LmI1OTQzYTExMDlkNjQ0NTk4ZjBlZWEwM2QzZTYxNmJiLjEzNTciLCJjX2hhc2giOiJObW9CZVo0Vm1zWFoyVEd6bjlTSUdnIiwiZW1haWwiOiI0czkya2Zia3ZnQHByaXZhdGVyZWxheS5hcHBsZWlkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlzX3ByaXZhdGVfZW1haWwiOiJ0cnVlIiwiYXV0aF90aW1lIjoxNjQ1MTc0NDM5LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.EEMgrlxMqcH0ftNXXNZqZWUKMe6U4agnZKO1hmqyV2jvydhO8N5lQ-ARS5Gp24kAkfu9E4VQiehjTsQi9uKoIUas0-QqWdvV7POMEEkyvMW7a_HA7Ar5IWA6i4BRqqlLvst2Day4zBfgY_VYj4bbvEd4tQW-bbcLySd6BJtBQBvw_euTer-emTGgUDCgWLl0fVDvJI2Covf7ZV2hYyX7QtZwhIp26hn0VBMqu2bIzLCbBxMfUAkLyyq2WCfamm7ju3DB9Q6D8gKrH3n7m0tcf_aaGjurzZQaAxZkdSWqiUR-ghgDPK91Mry2UC6R8f3cOOqYEHiVOkaaA6kL03S5jA',
+  },
+  user: {
+    name: { firstName: 'Guillaume', lastName: 'Chateauroux' },
+    email: '4s92kfbkvg@privaterelay.appleid.com',
+  },
+};

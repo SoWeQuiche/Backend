@@ -86,7 +86,9 @@ export class OrganizationService {
     if (user.isAdmin) {
       return this.organizationRepository.findAll();
     } else {
-      return this.organizationRepository.findAll();
+      return this.organizationRepository.findManyBy({
+        admins: { $in: [user._id] },
+      });
     }
   };
 
