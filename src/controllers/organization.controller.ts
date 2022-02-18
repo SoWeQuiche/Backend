@@ -28,8 +28,6 @@ export class OrganizationController {
 
   @Get()
   @UseGuards(JWTGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   listManagedOrganizations(@Req() request) {
     return this.organizationService.listManagedOrganizations(request.user);
@@ -37,8 +35,6 @@ export class OrganizationController {
 
   @Post()
   @UseGuards(JWTGuard, AdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   createOrganization(@Body() parameters: NameDTO) {
     return this.organizationService.createOrganization(parameters);
@@ -46,8 +42,6 @@ export class OrganizationController {
 
   @Get('/:organizationId')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   listGroups(@Param('organizationId') organizationId: string) {
     return this.organizationService.getOrganizationDetails(organizationId);
@@ -55,29 +49,13 @@ export class OrganizationController {
 
   @Delete('/:organizationId')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   deleteOrganization(@Param('organizationId') organizationId: string) {
-    return this.organizationService.deleteGroup(organizationId);
-  }
-
-  @Post('/:organizationId/groups')
-  @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  @ApiSecurity('Bearer')
-  createGroup(
-    @Param('organizationId') organizationId: string,
-    @Body() parameters: NameDTO,
-  ) {
-    return this.organizationService.createGroup(organizationId, parameters);
+    return this.organizationService.deleteOrganization(organizationId);
   }
 
   @Post('/:organizationId/promote')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   promoteToAdmin(
     @Param('organizationId') organizationId: string,
@@ -88,8 +66,6 @@ export class OrganizationController {
 
   @Post('/:organizationId/users')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   addUser(
     @Param('organizationId') organizationId: string,
