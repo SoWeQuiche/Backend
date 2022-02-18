@@ -16,7 +16,7 @@ class SwaUserDTO {
   email: string;
 }
 
-export class SwaDTO {
+class SwaAuthorizationDTO {
   @ApiProperty()
   // // @IsNotEmpty()
   code: string;
@@ -24,6 +24,11 @@ export class SwaDTO {
   @ApiProperty()
   // @IsNotEmpty()
   id_token: string;
+}
+
+export class SwaDTO {
+  @ApiProperty()
+  authorization: SwaAuthorizationDTO;
 
   @ApiProperty()
   user: SwaUserDTO;

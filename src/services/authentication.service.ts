@@ -58,7 +58,9 @@ export class AuthenticationService {
   };
 
   loginWithApple = async (parameters: SwaDTO): Promise<{ token: string }> => {
-    const decodedToken = await this.verifyAppleToken(parameters.id_token);
+    const decodedToken = await this.verifyAppleToken(
+      parameters.authorization.id_token,
+    );
 
     const existingUser = await this.userRepository.findOneBy({
       mail: decodedToken.email,
