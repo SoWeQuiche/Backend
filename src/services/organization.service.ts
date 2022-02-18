@@ -9,14 +9,17 @@ import { NameDTO } from '../dto/name.dto';
 import { Organization } from '../models/organization.model';
 import { User } from '../models/user.model';
 import { MailDTO } from '../dto/mail.dto';
-import { UserRepository } from '../repositories/user.repository';
+import { MailService, MailTemplate } from './mail.service';
+import { AuthenticationService } from './authentication.service';
+import config from '../config';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly organizationRepository: OrganizationRepository,
     private readonly groupRepository: GroupRepository,
-    private readonly userRepository: UserRepository,
+    private readonly authenticationService: AuthenticationService,
+    private readonly mailService: MailService,
   ) {}
 
   createOrganization = async (parameters: NameDTO): Promise<Organization> => {
@@ -52,8 +55,20 @@ export class OrganizationService {
       { hiddenPropertiesToSelect: ['admins'] },
     );
 
-    const user = await this.userRepository.findOneBy({ mail: parameters.mail });
-    if (!user) throw new BadRequestException('User not found');
+    let user = await this.authenticationService.findUserByMail(parameters.mail);
+
+    if (!user) {
+      user = await this.authenticationService.registerUser(parameters.mail);
+
+      await this.mailService.sendMail({
+        to: user.mail,
+        template: MailTemplate.registration,
+        data: {
+          organizationName: organization.name,
+          activationLink: `${config.frontUrl}/register?=mail=${user.mail}&code=${user.activationCode}`,
+        },
+      });
+    }
 
     if (!organization.admins.includes(user._id)) {
       organization.admins.push(user._id);
@@ -70,7 +85,9 @@ export class OrganizationService {
       { hiddenPropertiesToSelect: ['users'] },
     );
 
-    const user = await this.userRepository.findOneBy({ mail: parameters.mail });
+    const user = await this.authenticationService.findUserByMail(
+      parameters.mail,
+    );
     if (!user) throw new BadRequestException('User not found');
 
     if (!organization.users.includes(user._id)) {

@@ -6,6 +6,7 @@ export default {
   port: process.env.PORT,
   mongoUrl: process.env.MONGO_URL,
   apiUrl: process.env.API_URL,
+  frontUrl: process.env.FRONT_URL,
   jwt: {
     secretKey: process.env.JWT_SECRET_KEY,
     expirationTime: Number(process.env.JWT_EXP),
@@ -21,5 +22,13 @@ export default {
     id: process.env.AWS_ID,
     secret: process.env.AWS_SECRET,
     bucketName: process.env.AWS_BUCKET_NAME,
+  },
+  mail: {
+    host: process.env.EMAIL_SMTP_HOST,
+    port: process.env.EMAIL_SMTP_PORT,
+    user: process.env.EMAIL_SMTP_USER,
+    password: process.env.EMAIL_SMTP_PASSWORD,
+    secure: process.env.EMAIL_SMTP_SECURE,
+    from: process.env.EMAIL_FROM,
   },
 };

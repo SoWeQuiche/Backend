@@ -6,11 +6,11 @@ import {
 import * as bCrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as jwksClient from 'jwks-rsa';
+import { v4 as uuid } from 'uuid';
 import { LoginDTO } from '../dto/login.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { User } from '../models/user.model';
 import config from '../config';
-import { RegisterDTO } from '../dto/register.dto';
 import { SwaIdToken } from '../dto/swa-id-token.dto';
 import { SwaDTO } from '../dto/swa.dto';
 
@@ -18,23 +18,16 @@ import { SwaDTO } from '../dto/swa.dto';
 export class AuthenticationService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  registerUser = async (parameters: RegisterDTO): Promise<User> => {
-    const existingUser = await this.userRepository.findOneBy({
-      mail: parameters.mail,
-    });
+  registerUser = async (mail: string): Promise<User> => {
+    const existingUser = await this.findUserByMail(mail);
 
     if (!!existingUser) {
       throw new BadRequestException();
     }
 
-    // const activationKey = this.authenticationService.createActivationKey();
+    const activationCode = uuid();
 
-    const password = await this.encryptPassword(parameters.password);
-
-    const user = await this.userRepository.insert({
-      ...parameters,
-      password,
-    });
+    const user = await this.userRepository.insert({ mail, activationCode });
 
     return this.userRepository.findOneById(user._id);
   };
@@ -78,6 +71,9 @@ export class AuthenticationService {
 
     return { token: this.createToken(user) };
   };
+
+  findUserByMail = (mail: string): Promise<User> =>
+    this.userRepository.findOneBy({ mail });
 
   private createToken = (user: User): string =>
     jwt.sign({ _id: user._id }, config.jwt.secretKey, {
@@ -142,15 +138,3 @@ export class AuthenticationService {
     return user;
   };
 }
-
-const test = {
-  authorization: {
-    code: 'c53ffeda9250a4b3a892f6bc70539f9cc.0.rrxsx.JdNfCDupal3CjNDgYgK4eQ',
-    id_token:
-      'eyJraWQiOiJZdXlYb1kiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm1heGVuY2Vtb3R0YXJkLnN3cS5zd2EiLCJleHAiOjE2NDUyNjA4MzksImlhdCI6MTY0NTE3NDQzOSwic3ViIjoiMDAxNzI3LmI1OTQzYTExMDlkNjQ0NTk4ZjBlZWEwM2QzZTYxNmJiLjEzNTciLCJjX2hhc2giOiJObW9CZVo0Vm1zWFoyVEd6bjlTSUdnIiwiZW1haWwiOiI0czkya2Zia3ZnQHByaXZhdGVyZWxheS5hcHBsZWlkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlzX3ByaXZhdGVfZW1haWwiOiJ0cnVlIiwiYXV0aF90aW1lIjoxNjQ1MTc0NDM5LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.EEMgrlxMqcH0ftNXXNZqZWUKMe6U4agnZKO1hmqyV2jvydhO8N5lQ-ARS5Gp24kAkfu9E4VQiehjTsQi9uKoIUas0-QqWdvV7POMEEkyvMW7a_HA7Ar5IWA6i4BRqqlLvst2Day4zBfgY_VYj4bbvEd4tQW-bbcLySd6BJtBQBvw_euTer-emTGgUDCgWLl0fVDvJI2Covf7ZV2hYyX7QtZwhIp26hn0VBMqu2bIzLCbBxMfUAkLyyq2WCfamm7ju3DB9Q6D8gKrH3n7m0tcf_aaGjurzZQaAxZkdSWqiUR-ghgDPK91Mry2UC6R8f3cOOqYEHiVOkaaA6kL03S5jA',
-  },
-  user: {
-    name: { firstName: 'Guillaume', lastName: 'Chateauroux' },
-    email: '4s92kfbkvg@privaterelay.appleid.com',
-  },
-};

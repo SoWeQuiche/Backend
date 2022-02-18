@@ -13,10 +13,10 @@ export class User {
   @Prop({ select: false })
   password: string;
 
-  @Prop({ required: true })
+  @Prop()
   firstname: string;
 
-  @Prop({ required: true })
+  @Prop()
   lastname: string;
 
   @Prop({ default: false })
@@ -24,6 +24,9 @@ export class User {
 
   @Prop({ default: false })
   isAdmin: boolean;
+
+  @Prop()
+  activationCode: string;
 
   @Prop({ select: false })
   __v: number;

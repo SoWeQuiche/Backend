@@ -12,6 +12,7 @@ import { FileController } from '../controllers/file.controller';
 import { GroupController } from '../controllers/group.controller';
 import { GroupService } from '../services/group.service';
 import { AppService } from '../services/app.service';
+import { MailService } from '../services/mail.service';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
@@ -21,6 +22,7 @@ import { AppService } from '../services/app.service';
     OrganizationService,
     GroupService,
     AWSService,
+    MailService,
   ],
   controllers: [
     AppController,
