@@ -59,7 +59,6 @@ export class GroupService {
 
     if (!user) {
       user = await this.authenticationService.registerUser(parameters.mail);
-      // @ts-ignore
       await this.mailService.sendActivationMail(user, group.organization);
     }
 
