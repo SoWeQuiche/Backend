@@ -44,6 +44,7 @@ export class AuthenticationService {
 
     user.firstname = parameters.firstname;
     user.lastname = parameters.lastname;
+    user.isActive = true;
     user.activationCode = undefined;
 
     return user.save();
