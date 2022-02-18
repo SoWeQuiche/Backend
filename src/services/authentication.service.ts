@@ -13,6 +13,7 @@ import { User } from '../models/user.model';
 import config from '../config';
 import { SwaIdToken } from '../dto/swa-id-token.dto';
 import { SwaDTO } from '../dto/swa.dto';
+import { ActivationDTO } from '../dto/activation.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -30,6 +31,24 @@ export class AuthenticationService {
     const user = await this.userRepository.insert({ mail, activationCode });
 
     return this.userRepository.findOneById(user._id);
+  };
+
+  activateUser = async (parameters: ActivationDTO): Promise<User> => {
+    const user = await this.userRepository.findOneBy({
+      activationCode: parameters.code,
+    });
+
+    if (!user || user.isActive) {
+      throw new BadRequestException();
+    }
+
+    user.firstname = parameters.firstname;
+    user.lastname = parameters.lastname;
+    user.password = await this.encryptPassword(parameters.password);
+    user.isActive = true;
+    user.activationCode = undefined;
+
+    return user.save();
   };
 
   login = async (parameters: LoginDTO): Promise<{ token: string }> => {
