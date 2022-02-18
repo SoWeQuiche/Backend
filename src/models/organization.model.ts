@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { User } from './user.model';
-import { Group } from './group.model';
 
 export type OrganizationDocument = Organization & Document;
 
@@ -17,7 +16,6 @@ export class Organization {
     type: [Types.ObjectId],
     ref: User.name,
     default: [],
-    select: false,
   })
   admins: Types.ObjectId[];
 
@@ -29,15 +27,6 @@ export class Organization {
     select: false,
   })
   users: Types.ObjectId[];
-
-  @Prop({
-    required: true,
-    type: [Types.ObjectId],
-    ref: Group.name,
-    default: [],
-    select: false,
-  })
-  groups: Types.ObjectId[];
 
   @Prop({ select: false })
   __v: number;

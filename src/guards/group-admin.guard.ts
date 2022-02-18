@@ -1,31 +1,21 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { OrganizationRepository } from '../repositories/origanization.repository';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { GroupRepository } from '../repositories/group.repository';
 
 @Injectable()
 export class GroupAdminGuard implements CanActivate {
-  constructor(
-    private readonly organizationRepository: OrganizationRepository,
-  ) {}
+  constructor(private readonly groupRepository: GroupRepository) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const organization = await this.organizationRepository.findOneBy(
-      {
-        groups: {
-          $in: [request.params.groupId],
-        },
-      },
-      { hiddenPropertiesToSelect: ['admins'] },
+    const group = await this.groupRepository.findOneBy(
+      { _id: request.params.groupId },
+      { populate: ['organization'] },
     );
 
     return !(
-      !organization ||
-      (!organization.admins.includes(request.user._id) && !request.user.isAdmin)
+      !group.organization ||
+      (!group.organization.admins.includes(request.user._id) &&
+        !request.user.isAdmin)
     );
   }
 }
