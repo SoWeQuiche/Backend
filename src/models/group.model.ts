@@ -31,7 +31,7 @@ export class Group {
   users: Types.ObjectId[];
 
   @Prop({ required: true, type: Types.ObjectId, ref: Organization.name })
-  organization: Types.ObjectId;
+  organization: Organization;
 
   @Prop({ select: false })
   __v: number;

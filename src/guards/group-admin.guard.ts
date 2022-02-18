@@ -1,12 +1,5 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { OrganizationRepository } from '../repositories/origanization.repository';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GroupRepository } from '../repositories/group.repository';
-import { Types } from 'mongoose';
 
 @Injectable()
 export class GroupAdminGuard implements CanActivate {
@@ -21,7 +14,6 @@ export class GroupAdminGuard implements CanActivate {
 
     return !(
       !group.organization ||
-      // @ts-ignore
       (!group.organization.admins.includes(request.user._id) &&
         !request.user.isAdmin)
     );
