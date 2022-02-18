@@ -9,6 +9,7 @@ import { AuthenticationService } from '../services/authentication.service';
 import { LoginDTO } from '../dto/login.dto';
 import { SwaDTO } from '../dto/swa.dto';
 import { JWTGuard } from '../guards/jwt.guard';
+import { ActivationDTO } from '../dto/activation.dto';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -16,10 +17,18 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Post('login')
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   loginUser(@Body() parameters: LoginDTO): Promise<{ token: string }> {
     return this.authenticationService.login(parameters);
+  }
+
+  @Post('/login/apple-id')
+  async appleIdWebhook(@Body() body: SwaDTO): Promise<{ token: string }> {
+    return this.authenticationService.loginWithApple(body);
+  }
+
+  @Post('activate')
+  activateUser(@Body() parameters: ActivationDTO) {
+    return this.authenticationService.activateUser(parameters);
   }
 
   @Get('me')
@@ -27,10 +36,5 @@ export class AuthenticationController {
   @ApiSecurity('Bearer')
   me(@Req() request) {
     return request.user;
-  }
-
-  @Post('/login/apple-id')
-  async appleIdWebhook(@Body() body: SwaDTO): Promise<{ token: string }> {
-    return this.authenticationService.loginWithApple(body);
   }
 }

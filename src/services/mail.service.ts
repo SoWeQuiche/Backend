@@ -4,6 +4,8 @@ import config from '../config';
 import handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as mjml from 'mjml';
+import { User } from '../models/user.model';
+import { Organization } from '../models/organization.model';
 
 @Injectable()
 export class MailService {
@@ -20,6 +22,16 @@ export class MailService {
       },
     });
   }
+
+  sendActivationMail = (user: User, organization: Organization) =>
+    this.sendMail({
+      to: user.mail,
+      template: MailTemplate.registration,
+      data: {
+        organizationName: organization.name,
+        activationLink: `${config.frontUrl}/register?mail=${user.mail}&code=${user.activationCode}`,
+      },
+    });
 
   sendMail = async (params: SendMailParams) => {
     try {

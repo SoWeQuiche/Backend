@@ -60,14 +60,7 @@ export class OrganizationService {
     if (!user) {
       user = await this.authenticationService.registerUser(parameters.mail);
 
-      await this.mailService.sendMail({
-        to: user.mail,
-        template: MailTemplate.registration,
-        data: {
-          organizationName: organization.name,
-          activationLink: `${config.frontUrl}/register?=mail=${user.mail}&code=${user.activationCode}`,
-        },
-      });
+      await this.mailService.sendActivationMail(user, organization);
     }
 
     if (!organization.admins.includes(user._id)) {
