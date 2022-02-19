@@ -12,9 +12,6 @@ export class TimeSlot {
   group: Group;
 
   @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
   startDate: Date;
 
   @Prop({ required: true })
