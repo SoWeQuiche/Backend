@@ -17,7 +17,7 @@
                          letter-spacing="normal" padding-bottom="0px" padding-top="0px" padding="0px 25px 0px 25px">
                     <h1 style="text-align:left; margin-top: 10px; margin-bottom: 10px">
                         <span style="line-height:22px;font-size:20px;letter-spacing:normal;text-align:left;color:#55575d;font-family:Arial;">
-                            <b>Activation de compte</b>
+                            <b>{{subject}}</b>
                         </span>
                     </h1>
                 </mj-text>
@@ -25,7 +25,12 @@
                          letter-spacing="normal" padding-bottom="0px" padding-top="0px" padding="0px 25px 0px 25px">
                     <p style="text-align: left; margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
                         <span style="line-height:22px;font-size:13px;letter-spacing:normal;text-align:left;color:#55575d;font-family:Arial;">
-                            Vous êtes invité à rejoindre {{organizationName}}.
+                            Bonjour,
+                        </span>
+                    </p>
+                    <p style="text-align: left; margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
+                        <span style="line-height:22px;font-size:13px;letter-spacing:normal;text-align:left;color:#55575d;font-family:Arial;">
+                            Vous avez été invité à rejoindre {{organizationName}}.
                         </span>
                     </p>
                     <p style="text-align: left; margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
