@@ -11,10 +11,10 @@ import { FileRepository } from '../repositories/file.repository';
 
 @Module({
   imports: [
-    NestMongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    NestMongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
-    NestMongooseModule.forFeature([{ name: Group.name, schema: GroupSchema }]),
     NestMongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: File.name, schema: FileSchema },
+      { name: Group.name, schema: GroupSchema },
       { name: Organization.name, schema: OrganizationSchema },
     ]),
   ],
