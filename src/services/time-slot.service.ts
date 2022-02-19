@@ -98,10 +98,10 @@ export class TimeSlotService {
   deleteOneGroupTimeSlotById = async (timeSlotId: string): Promise<boolean> =>
     this.timeSlotRepository.deleteOnyBy({ _id: timeSlotId });
 
-  getUserTimeSlots = async (user: User) => {
+  getUserTimeSlots = async (userId: string) => {
     const userGroups = await this.groupRepository.findManyBy({
       users: {
-        $in: user._id,
+        $in: userId,
       },
     });
 
