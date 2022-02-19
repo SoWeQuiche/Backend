@@ -32,8 +32,8 @@ import { TimeSlotController } from 'src/controllers/time-slot.controller';
     AuthenticationController,
     OrganizationController,
     GroupController,
-    FileController,
     TimeSlotController,
+    FileController,
   ],
 })
 export class AppModule {}
