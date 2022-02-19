@@ -13,6 +13,8 @@ import { GroupController } from '../controllers/group.controller';
 import { GroupService } from '../services/group.service';
 import { AppService } from '../services/app.service';
 import { MailService } from '../services/mail.service';
+import { TimeSlotService } from 'src/services/time-slot.service';
+import { TimeSlotController } from 'src/controllers/time-slot.controller';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
@@ -23,6 +25,7 @@ import { MailService } from '../services/mail.service';
     GroupService,
     AWSService,
     MailService,
+    TimeSlotService,
   ],
   controllers: [
     AppController,
@@ -30,6 +33,7 @@ import { MailService } from '../services/mail.service';
     OrganizationController,
     GroupController,
     FileController,
+    TimeSlotController,
   ],
 })
 export class AppModule {}
