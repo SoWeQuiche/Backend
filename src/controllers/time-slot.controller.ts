@@ -51,13 +51,8 @@ export class TimeSlotController {
     @Body() body: TimeSlotDTO,
   ) {
     return this.timeSlotService.updateOneGroupTimeSlotById(
-      {
-        groupId,
-        timeSlotId,
-      },
-      {
-        ...body,
-      },
+      { groupId, timeSlotId },
+      {  ...body },
     );
   }
 
