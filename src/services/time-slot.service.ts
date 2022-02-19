@@ -14,9 +14,7 @@ export class TimeSlotService {
     this.timeSlotRepository.insert({ groupId, ...parameters });
 
   getAllGroupTimeSlots = async (groupId: string): Promise<TimeSlot[]> =>
-    this.timeSlotRepository.findManyBy({
-      groupId,
-    });
+    this.timeSlotRepository.findManyBy({ groupId });
 
   getOneGroupTimeSlotById = async (timeSlotId: string): Promise<TimeSlot> =>
     this.timeSlotRepository.findOneBy({  _id: timeSlotId });
