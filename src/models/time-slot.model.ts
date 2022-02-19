@@ -7,8 +7,9 @@ export type TimeSlotDocument = TimeSlot & Document;
 export class TimeSlot {
   _id: Types.ObjectId;
 
-  @Prop({ required: true, unique: true })
-  groupId: string;
+  @Prop({ required: true, type: Types.ObjectId, ref: Group.name })
+  @Prop({ required: true })
+  group: Group;
 
   @Prop({ required: true })
   name: string;
