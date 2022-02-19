@@ -42,7 +42,5 @@ export class TimeSlotService {
     this.timeSlotRepository.deleteOnyBy({ timeSlotId });
 
   getUserTimeSlots = async (userId: string): Promise<TimeSlot[]> =>
-    this.timeSlotRepository.findManyBy({
-      userId,
-    });
+    this.timeSlotRepository.findManyBy({ userId });
 }
