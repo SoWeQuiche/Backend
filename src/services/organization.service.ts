@@ -26,6 +26,22 @@ export class OrganizationService {
     return this.organizationRepository.insert(parameters);
   };
 
+  listOrganizationUsers = async (organizationId: string): Promise<User[]> =>
+    // @ts-ignore
+    this.organizationRepository
+      .findOneById(organizationId, {
+        populate: ['users'],
+      })
+      .then((organization) => organization.users);
+
+  listOrganizationAdmins = async (organizationId: string): Promise<User[]> =>
+    // @ts-ignore
+    this.organizationRepository
+      .findOneById(organizationId, {
+        populate: ['admins'],
+      })
+      .then((organization) => organization.admins);
+
   promoteUser = async (
     organizationId: string,
     parameters: MailDTO,

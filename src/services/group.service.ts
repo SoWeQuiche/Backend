@@ -11,6 +11,7 @@ import { MailService } from './mail.service';
 import { NameDTO } from '../dto/name.dto';
 import { Group } from '../models/group.model';
 import { Types } from 'mongoose';
+import { User } from '../models/user.model';
 
 @Injectable()
 export class GroupService {
@@ -45,6 +46,22 @@ export class GroupService {
     this.groupRepository.findManyBy({
       organization: new Types.ObjectId(organizationId),
     });
+
+  listGroupAdmins = async (groupId: string): Promise<User[]> =>
+    // @ts-ignore
+    this.groupRepository
+      .findOneById(groupId, {
+        populate: ['admins'],
+      })
+      .then((organization) => organization.admins);
+
+  listGroupUsers = async (groupId: string): Promise<User[]> =>
+    // @ts-ignore
+    this.groupRepository
+      .findOneById(groupId, {
+        populate: ['users'],
+      })
+      .then((organization) => organization.users);
 
   deleteGroup = (groupId: string) =>
     this.groupRepository.deleteOnyBy({ _id: groupId });

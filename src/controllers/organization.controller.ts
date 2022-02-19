@@ -48,20 +48,17 @@ export class OrganizationController {
   }
 
   @Delete('/:organizationId')
-  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @UseGuards(JWTGuard, AdminGuard)
   @ApiSecurity('Bearer')
   deleteOrganization(@Param('organizationId') organizationId: string) {
     return this.organizationService.deleteOrganization(organizationId);
   }
 
-  @Post('/:organizationId/promote')
+  @Get('/:organizationId/users')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
-  promoteToAdmin(
-    @Param('organizationId') organizationId: string,
-    @Body() parameters: MailDTO,
-  ) {
-    return this.organizationService.promoteUser(organizationId, parameters);
+  listOrganizationUsers(@Param('organizationId') organizationId: string) {
+    return this.organizationService.listOrganizationUsers(organizationId);
   }
 
   @Post('/:organizationId/users')
@@ -72,5 +69,22 @@ export class OrganizationController {
     @Body() parameters: MailDTO,
   ) {
     return this.organizationService.addUser(organizationId, parameters);
+  }
+
+  @Get('/:organizationId/admins')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  listOrganizationAdmins(@Param('organizationId') organizationId: string) {
+    return this.organizationService.listOrganizationAdmins(organizationId);
+  }
+
+  @Post('/:organizationId/admins')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  promoteToAdmin(
+    @Param('organizationId') organizationId: string,
+    @Body() parameters: MailDTO,
+  ) {
+    return this.organizationService.promoteUser(organizationId, parameters);
   }
 }
