@@ -19,9 +19,7 @@ export class TimeSlotService {
     });
 
   getOneGroupTimeSlotById = async (timeSlotId: string): Promise<TimeSlot> =>
-    this.timeSlotRepository.findOneBy({
-      _id: timeSlotId,
-    });
+    this.timeSlotRepository.findOneBy({  _id: timeSlotId });
 
   updateOneGroupTimeSlotById = async (
     conditions: {
