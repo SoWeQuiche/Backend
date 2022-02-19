@@ -10,11 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { TimeSlotDTO } from 'src/dto/time-slot.dto';
-import { GroupAdminGuard } from 'src/guards/group-admin.guard';
-import { JWTGuard } from 'src/guards/jwt.guard';
-import { OrganizationAdminGuard } from 'src/guards/organization-admin.guard';
-import { TimeSlotService } from 'src/services/time-slot.service';
+import { TimeSlotDTO } from '../dto/time-slot.dto';
+import { GroupOrganizationAdminGuard } from '../guards/group-organization-admin.guard';
+import { JWTGuard } from '../guards/jwt.guard';
+import { OrganizationAdminGuard } from '../guards/organization-admin.guard';
+import { TimeSlotService } from '../services/time-slot.service';
 
 @Controller('timeslots')
 @ApiTags('TimeSlot')
@@ -22,28 +22,28 @@ export class TimeSlotController {
   constructor(private readonly timeSlotService: TimeSlotService) {}
 
   @Post('/group/:groupId')
-  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   createTimeSlot(@Param() groupId: string, @Body() body: TimeSlotDTO) {
     return this.timeSlotService.insertTimeSlot(groupId, body);
   }
 
   @Get('/group/:groupId')
-  @UseGuards(JWTGuard, GroupAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   readAllGroupTimeSlot(@Param('groupId') groupId: string) {
     return this.timeSlotService.getAllGroupTimeSlots(groupId);
   }
 
-  @Get('/:timeSlotId')
-  @UseGuards(JWTGuard, GroupAdminGuard)
+  @Get('/group/:groupId/:timeSlotId')
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   readOneGroupTimeSlot(@Param('timeSlotId') timeSlotId: string) {
     return this.timeSlotService.getOneGroupTimeSlotById(timeSlotId);
   }
 
   @Patch('/group/:groupId/:timeSlotId')
-  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   updateOneGroupTimeSlot(
     @Param('groupId') groupId: string,

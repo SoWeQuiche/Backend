@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GroupRepository } from '../repositories/group.repository';
 
 @Injectable()
-export class GroupAdminGuard implements CanActivate {
+export class GroupOrganizationAdminGuard implements CanActivate {
   constructor(private readonly groupRepository: GroupRepository) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
