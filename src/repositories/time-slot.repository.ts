@@ -11,4 +11,8 @@ export class TimeSlotRepository extends BaseRepository<TimeSlotDocument> {
   ) {
     super(model);
   }
+
+  async getTimeSlotWithGroupUsers(timeSlotId: string) {
+    return this.Model.findById(timeSlotId).populate('group', 'users');
+  }
 }

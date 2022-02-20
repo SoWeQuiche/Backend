@@ -3,7 +3,7 @@ import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { GroupRepository } from '../repositories/group.repository';
 
 @Injectable()
-export class TimeSlotOrganizationAdminGuard implements CanActivate {
+export class TimeSlotGroupAdminGuard implements CanActivate {
   constructor(
     private readonly groupRepository: GroupRepository,
     private readonly timeSlotRepository: TimeSlotRepository,
@@ -22,10 +22,7 @@ export class TimeSlotOrganizationAdminGuard implements CanActivate {
 
     const group = await this.groupRepository.findOneBy(
       { _id: timeSlot.group },
-      {
-        populate: ['organization'],
-        hiddenPropertiesToSelect: ['admins'],
-      },
+      { populate: ['organization'], hiddenPropertiesToSelect: ['admins'] },
     );
 
     if (!group || !group.organization) {
@@ -33,6 +30,7 @@ export class TimeSlotOrganizationAdminGuard implements CanActivate {
     }
 
     if (
+      !group.admins.includes(request.user._id) &&
       !group.organization.admins.includes(request.user._id) &&
       !request.user.isAdmin
     ) {

@@ -10,6 +10,8 @@ import { File, FileSchema } from '../models/file.model';
 import { FileRepository } from '../repositories/file.repository';
 import { TimeSlot, TimeSlotSchema } from '../models/time-slot.model';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
+import { AttendanceRepository } from '../repositories/attendance.repository';
+import { AttencandeSchema, Attendance } from '../models/attendance.model';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { TimeSlotRepository } from '../repositories/time-slot.repository';
       { name: Group.name, schema: GroupSchema },
       { name: Organization.name, schema: OrganizationSchema },
       { name: TimeSlot.name, schema: TimeSlotSchema },
+      { name: Attendance.name, schema: AttencandeSchema },
     ]),
   ],
   providers: [
@@ -27,6 +30,7 @@ import { TimeSlotRepository } from '../repositories/time-slot.repository';
     GroupRepository,
     FileRepository,
     TimeSlotRepository,
+    AttendanceRepository,
   ],
   exports: [
     UserRepository,
@@ -34,6 +38,7 @@ import { TimeSlotRepository } from '../repositories/time-slot.repository';
     GroupRepository,
     FileRepository,
     TimeSlotRepository,
+    AttendanceRepository,
   ],
 })
 export class MongoModule {}
