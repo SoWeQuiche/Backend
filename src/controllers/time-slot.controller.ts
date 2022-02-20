@@ -55,7 +55,7 @@ export class TimeSlotController {
     @Body() body: PatchingTimeSlotDTO,
   ) {
     return this.timeSlotService.updateOneGroupTimeSlotById(
-      { groupId, timeSlotId },
+      { timeSlotId },
       { ...body },
     );
   }

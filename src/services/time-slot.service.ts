@@ -32,16 +32,12 @@ export class TimeSlotService {
     this.timeSlotRepository.findOneBy({ _id: timeSlotId });
 
   updateOneGroupTimeSlotById = async (
-    conditions: {
-      groupId: string;
-      timeSlotId: string;
-    },
+    conditions: { timeSlotId: string },
     set: PatchingTimeSlotDTO,
   ): Promise<boolean> =>
     this.timeSlotRepository.updateOneBy(
       {
-        group: new mongoose.Types.ObjectId(conditions.groupId),
-        timeSlotId: conditions.timeSlotId,
+        _id: conditions.timeSlotId,
       },
       {
         ...set,
