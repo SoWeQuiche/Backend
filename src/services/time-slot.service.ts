@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
-import { PatchingTimeSlotDTO } from 'src/dto/patching-time-slot.dto';
 import { TimeSlotDTO } from 'src/dto/time-slot.dto';
 import { TimeSlot } from 'src/models/time-slot.model';
 import { User } from 'src/models/user.model';
@@ -33,18 +32,13 @@ export class TimeSlotService {
 
   updateOneGroupTimeSlotById = async (
     conditions: { timeSlotId: string },
-    set: PatchingTimeSlotDTO,
+    set: TimeSlotDTO,
   ): Promise<boolean> =>
     this.timeSlotRepository.updateOneBy(
       {
         _id: conditions.timeSlotId,
       },
-      {
-        ...set,
-        group: set.groupdId
-          ? new mongoose.Types.ObjectId(set.groupdId)
-          : undefined,
-      },
+      { ...set },
     );
 
   deleteOneGroupTimeSlotById = async (timeSlotId: string): Promise<boolean> =>
@@ -58,9 +52,7 @@ export class TimeSlotService {
     });
 
     const allTimeSlots = await Promise.all(
-      userGroups.map((group) =>
-        this.getAllGroupTimeSlots(group._id),
-      ),
+      userGroups.map((group) => this.getAllGroupTimeSlots(group._id)),
     );
 
     return allTimeSlots.flat();

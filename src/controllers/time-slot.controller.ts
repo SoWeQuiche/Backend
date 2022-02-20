@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { PatchingTimeSlotDTO } from 'src/dto/patching-time-slot.dto';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { GroupOrganizationAdminGuard } from '../guards/group-organization-admin.guard';
 import { JWTGuard } from '../guards/jwt.guard';
@@ -52,7 +51,7 @@ export class TimeSlotController {
   updateOneGroupTimeSlot(
     @Param('groupId') groupId: string,
     @Param('timeSlotId') timeSlotId: string,
-    @Body() body: PatchingTimeSlotDTO,
+    @Body() body: TimeSlotDTO,
   ) {
     return this.timeSlotService.updateOneGroupTimeSlotById(
       { timeSlotId },
