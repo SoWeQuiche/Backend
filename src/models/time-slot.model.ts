@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { Group } from './group.model';
 
 export type TimeSlotDocument = TimeSlot & Document;
 
@@ -8,7 +9,6 @@ export class TimeSlot {
   _id: Types.ObjectId;
 
   @Prop({ required: true, type: Types.ObjectId, ref: Group.name })
-  @Prop({ required: true })
   group: Group;
 
   @Prop({ required: true })

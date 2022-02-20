@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { PatchingTimeSlotDTO } from 'src/dto/patching-time-slot.dto';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { GroupOrganizationAdminGuard } from '../guards/group-organization-admin.guard';
 import { JWTGuard } from '../guards/jwt.guard';
@@ -24,7 +25,7 @@ export class TimeSlotController {
   @Post('/group/:groupId')
   @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
-  createTimeSlot(@Param() groupId: string, @Body() body: TimeSlotDTO) {
+  createTimeSlot(@Param('groupId') groupId: string, @Body() body: TimeSlotDTO) {
     return this.timeSlotService.insertTimeSlot(groupId, body);
   }
 
@@ -38,7 +39,10 @@ export class TimeSlotController {
   @Get('/group/:groupId/:timeSlotId')
   @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
-  readOneGroupTimeSlot(@Param('timeSlotId') timeSlotId: string) {
+  readOneGroupTimeSlot(
+    @Param('groupId') groupId: string,
+    @Param('timeSlotId') timeSlotId: string,
+  ) {
     return this.timeSlotService.getOneGroupTimeSlotById(timeSlotId);
   }
 
@@ -48,11 +52,11 @@ export class TimeSlotController {
   updateOneGroupTimeSlot(
     @Param('groupId') groupId: string,
     @Param('timeSlotId') timeSlotId: string,
-    @Body() body: TimeSlotDTO,
+    @Body() body: PatchingTimeSlotDTO,
   ) {
     return this.timeSlotService.updateOneGroupTimeSlotById(
       { groupId, timeSlotId },
-      {  ...body },
+      { ...body },
     );
   }
 
@@ -67,6 +71,6 @@ export class TimeSlotController {
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
   getUserTimeSlots(@Req() req) {
-    return this.timeSlotService.getUserTimeSlots(req.user._id);
+    return this.timeSlotService.getUserTimeSlots(req.user);
   }
 }
