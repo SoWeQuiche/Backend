@@ -13,8 +13,8 @@ import { GroupController } from '../controllers/group.controller';
 import { GroupService } from '../services/group.service';
 import { AppService } from '../services/app.service';
 import { MailService } from '../services/mail.service';
-import { TimeSlotService } from 'src/services/time-slot.service';
-import { TimeSlotController } from 'src/controllers/time-slot.controller';
+import { TimeSlotService } from '../services/time-slot.service';
+import { TimeSlotController } from '../controllers/time-slot.controller';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],

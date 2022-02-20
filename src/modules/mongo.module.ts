@@ -8,8 +8,8 @@ import { Group, GroupSchema } from '../models/group.model';
 import { GroupRepository } from '../repositories/group.repository';
 import { File, FileSchema } from '../models/file.model';
 import { FileRepository } from '../repositories/file.repository';
-import { TimeSlot, TimeSlotSchema } from 'src/models/time-slot.model';
-import { TimeSlotRepository } from 'src/repositories/time-slot.repository';
+import { TimeSlot, TimeSlotSchema } from '../models/time-slot.model';
+import { TimeSlotRepository } from '../repositories/time-slot.repository';
 
 @Module({
   imports: [
