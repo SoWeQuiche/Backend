@@ -37,6 +37,13 @@ export class GroupController {
     return this.groupService.createGroup(organizationId, parameters);
   }
 
+  @Get('/:groupId')
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  getGroupDetails(@Param('groupId') groupId: string) {
+    return this.groupService.getGroupDetails(groupId);
+  }
+
   @Delete('/:groupId')
   @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
