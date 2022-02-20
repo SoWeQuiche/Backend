@@ -4,6 +4,8 @@ import {
   FilterQuery as MongooseFilterQuery,
   Model,
   Types,
+  QueryWithHelpers,
+  HydratedDocument,
 } from 'mongoose';
 import { BadRequestException } from '@nestjs/common';
 
@@ -26,31 +28,6 @@ class BaseRepository<T extends Document> {
     }
   }
 
-  async findOneBy(
-    condition: FilterQuery<T>,
-    params?: AdditionalParams,
-  ): Promise<T | null> {
-    try {
-      const finedObject = await this.Model.findOne(condition)
-        .select(
-          (params?.hiddenPropertiesToSelect || [])
-            .map((property) => `+${property}`)
-            .join(' '),
-        )
-        .populate((params?.populate || []).join(' '));
-
-      // @ts-ignore
-      return finedObject || null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  async findOneById(_id: string, params?: AdditionalParams): Promise<T | null> {
-    // @ts-ignore
-    return this.findOneBy({ _id }, params);
-  }
-
   async deleteOnyBy(condition: FilterQuery<T>): Promise<boolean> {
     try {
       return (await this.Model.deleteOne(condition)).deletedCount > 0;
@@ -64,7 +41,6 @@ class BaseRepository<T extends Document> {
     set: DataType,
   ): Promise<boolean> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _id, ...data } = set;
       const update = await this.Model.updateOne(condition, {
         // @ts-ignore
@@ -77,57 +53,61 @@ class BaseRepository<T extends Document> {
     }
   }
 
+  async findOneById(
+    _id: string,
+    params: AdditionalParams = {},
+  ): Promise<T | null> {
+    return this.findOneBy({ _id }, params);
+  }
+
+  async findOneBy(
+    condition: FilterQuery<T>,
+    params: AdditionalParams = {},
+  ): Promise<T | null> {
+    try {
+      return this.selectAndPopulate<T>(this.Model.findOne(condition), params);
+    } catch (e) {
+      return null;
+    }
+  }
+
   async findManyBy(
     condition: FilterQuery<T>,
-    params?: AdditionalParams,
+    params: AdditionalParams = {},
   ): Promise<T[]> {
     try {
-      return this.Model.find(condition)
-        .select(
-          (params?.hiddenPropertiesToSelect || [])
-            .map((property) => `+${property}`)
-            .join(' '),
-        )
-        .populate((params?.populate || []).join(' '));
+      return this.selectAndPopulate<T[]>(this.Model.find(condition), params);
     } catch {
       return [];
     }
   }
 
-  async findAll(params?: AdditionalParams): Promise<T[]> {
+  async findAll(params: AdditionalParams = {}): Promise<T[]> {
     return this.findManyBy({}, params);
   }
 
-  async pushArray(condition: FilterQuery<T>, data: DataType): Promise<boolean> {
-    try {
-      // @ts-ignore
-      const update = await this.Model.updateOne(condition, {
-        $push: data,
-        $inc: { __v: 1 },
-      });
-      return update.modifiedCount > 0;
-    } catch {
-      return false;
-    }
-  }
-
-  async pullArray(condition: FilterQuery<T>, data: DataType): Promise<boolean> {
-    try {
-      // @ts-ignore
-      const update = await this.Model.updateOne(condition, {
-        $pull: data,
-        $inc: { __v: 1 },
-      });
-      return update.modifiedCount > 0;
-    } catch {
-      return false;
-    }
+  private async selectAndPopulate<D>(
+    query: QueryWithHelpers<
+      HydratedDocument<T, any, any> | null,
+      HydratedDocument<T, any, any>,
+      any,
+      T
+    >,
+    params: AdditionalParams,
+  ): Promise<D> {
+    return query
+      .select(
+        (params?.hiddenPropertiesToSelect || [])
+          .map((property) => `+${property}`)
+          .join(' '),
+      )
+      .populate((params?.populate || []).join(' '));
   }
 }
 
 export type AdditionalParams = {
   hiddenPropertiesToSelect?: string[];
-  populate?: string[];
+  populate?: string[] | string[][];
 };
 export type FilterQuery<T> = MongooseFilterQuery<T>;
 export type DataType = Record<
