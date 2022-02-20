@@ -63,7 +63,7 @@ export class TimeSlotService {
 
     const allTimeSlots = await Promise.all(
       userGroups.map((group) =>
-        this.timeSlotRepository.findManyBy({ groupeId: group._id }),
+        this.getAllGroupTimeSlots(group._id),
       ),
     );
 
