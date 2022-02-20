@@ -82,6 +82,11 @@ export class AttendanceService {
       throw new NotFoundException('Attendance not found');
     }
 
+    if (set.isPresent === false) {
+      attendance.signFile = undefined;
+      attendance.signDate = undefined;
+    }
+
     attendance.isPresent = set.isPresent;
 
     await attendance.save();
