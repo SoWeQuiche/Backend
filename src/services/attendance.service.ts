@@ -62,7 +62,7 @@ export class AttendanceService {
       {
         timeSlot: new mongoose.Types.ObjectId(timeSlotId),
       },
-      { populate: ['user', 'signfile'] },
+      { populate: ['user', 'signFile'] },
     );
 
   getAttendancesById = async (attendanceId: string): Promise<Attendance> =>

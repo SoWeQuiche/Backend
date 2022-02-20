@@ -29,10 +29,10 @@ export class AttendanceController {
     return this.attendanceService.initTimeSlotAttendances(timeSlotId);
   }
 
-  @Get('/timeslot/:timeSlot')
+  @Get('/timeslot/:timeSlotId')
   @UseGuards(JWTGuard, TimeSlotGroupAdminGuard)
   @ApiSecurity('Bearer')
-  getAllAttendance(@Param('timeSlotId') timeSlotId: string) {
+  getAllTimeSlotAttendance(@Param('timeSlotId') timeSlotId: string) {
     return this.attendanceService.getAllTimeSlotAttendances(timeSlotId);
   }
 
