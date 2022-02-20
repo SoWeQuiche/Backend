@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -34,13 +34,7 @@ export class TimeSlotService {
     });
 
     if (concurentTimeSlot.length > 0) {
-      throw new BadRequestException(
-        {
-          statusCode: 400,
-          message: 'Overlapping another existing Time Slot',
-        },
-        'Overlapping another existing Time Slot',
-      );
+      throw new ConflictException('Overlapping another existing Time Slot');
     }
 
     return this.timeSlotRepository.insert({
@@ -80,13 +74,7 @@ export class TimeSlotService {
     });
 
     if (concurentTimeSlot.length > 0) {
-      throw new BadRequestException(
-        {
-          statusCode: 400,
-          message: 'Overlapping another existing Time Slot',
-        },
-        'Overlapping another existing Time Slot',
-      );
+      throw new ConflictException('Overlapping another existing Time Slot');
     }
 
     existingTimeSlot.startDate = new Date(set.startDate);
