@@ -105,6 +105,8 @@ export class AttendanceService {
       throw new NotFoundException('Attendance not found');
     }
 
+    // TODO: add sign key validation (getted with QRCode) or isPresent === true to be able to sign
+
     if (attendance.signDate) {
       throw new ForbiddenException('You cannot sign twice');
     }
