@@ -8,15 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JWTGuard } from '../guards/jwt.guard';
-import {
-  ApiOkResponse,
-  ApiSecurity,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { MailDTO } from '../dto/mail.dto';
 import { GroupService } from '../services/group.service';
-import { GroupAdminGuard } from '../guards/group-admin.guard';
+import { GroupOrganizationAdminGuard } from '../guards/group-organization-admin.guard';
 import { OrganizationAdminGuard } from '../guards/organization-admin.guard';
 import { NameDTO } from '../dto/name.dto';
 
@@ -43,35 +38,35 @@ export class GroupController {
   }
 
   @Delete('/:groupId')
-  @UseGuards(JWTGuard, GroupAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   deleteGroup(@Param('groupId') groupId: string) {
     return this.groupService.deleteGroup(groupId);
   }
 
   @Get('/:groupId/users')
-  @UseGuards(JWTGuard, GroupAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   listGroupUsers(@Param('groupId') groupId: string) {
     return this.groupService.listGroupUsers(groupId);
   }
 
   @Post('/:groupId/users')
-  @UseGuards(JWTGuard, GroupAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   addUser(@Param('groupId') groupId: string, @Body() parameters: MailDTO) {
     return this.groupService.addUser(groupId, parameters);
   }
 
   @Get('/:groupId/admins')
-  @UseGuards(JWTGuard, GroupAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   listGroupAdmins(@Param('groupId') groupId: string) {
     return this.groupService.listGroupAdmins(groupId);
   }
 
   @Post('/:groupId/admins')
-  @UseGuards(JWTGuard, GroupAdminGuard)
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
   promoteToAdmin(
     @Param('groupId') groupId: string,
