@@ -66,6 +66,9 @@ export class GroupService {
   deleteGroup = (groupId: string) =>
     this.groupRepository.deleteOnyBy({ _id: groupId });
 
+  getGroupDetails = (groupId: string) =>
+    this.groupRepository.findOneById(groupId);
+
   promoteUser = async (groupId: string, parameters: MailDTO): Promise<void> => {
     const group = await this.groupRepository.findOneById(groupId, {
       hiddenPropertiesToSelect: ['admins'],
