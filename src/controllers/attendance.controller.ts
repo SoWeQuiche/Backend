@@ -9,10 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { DefineAttendancePresenceDTO } from 'src/dto/attendance-is-present.dto';
-import { SignAttendanceDTO } from 'src/dto/sign-attendance.dto';
-import { AttendanceTimeSlotGroupAdminGuard } from 'src/guards/attendance-time-slot-group-admin.guard';
-import { UserAssociatedAttendanceGuard } from 'src/guards/user-associated-attendance.guard';
+import { DefineAttendancePresenceDTO } from '../dto/attendance-is-present.dto';
+import { SignAttendanceDTO } from '../dto/sign-attendance.dto';
+import { AttendanceTimeSlotGroupAdminGuard } from '../guards/attendance-time-slot-group-admin.guard';
+import { UserAssociatedAttendanceGuard } from '../guards/user-associated-attendance.guard';
 import { JWTGuard } from '../guards/jwt.guard';
 import { TimeSlotGroupAdminGuard } from '../guards/time-slot-group-admin.guard';
 import { AttendanceService } from '../services/attendance.service';
