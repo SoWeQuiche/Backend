@@ -8,13 +8,8 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { OrganizationService } from '../services/organization.service';
-import {
-  ApiOkResponse,
-  ApiSecurity,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
 import { JWTGuard } from '../guards/jwt.guard';
 import { AdminGuard } from '../guards/admin.guard';
 import { NameDTO } from '../dto/name.dto';

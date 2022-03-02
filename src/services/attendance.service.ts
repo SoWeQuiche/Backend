@@ -5,14 +5,13 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  Req,
 } from '@nestjs/common';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { DefineAttendancePresenceDTO } from '../dto/attendance-is-present.dto';
 import { Attendance } from '../models/attendance.model';
 import { AttendanceRepository } from '../repositories/attendance.repository';
-import { SignAttendanceDTO } from 'src/dto/sign-attendance.dto';
-import { FileRepository } from 'src/repositories/file.repository';
+import { SignAttendanceDTO } from '../dto/sign-attendance.dto';
+import { FileRepository } from '../repositories/file.repository';
 
 @Injectable()
 export class AttendanceService {
@@ -59,9 +58,7 @@ export class AttendanceService {
     timeSlotId: string,
   ): Promise<Attendance[]> =>
     this.attendanceRepository.findManyBy(
-      {
-        timeSlot: new mongoose.Types.ObjectId(timeSlotId),
-      },
+      { timeSlot: new mongoose.Types.ObjectId(timeSlotId) },
       { populate: ['user', 'signFile'] },
     );
 

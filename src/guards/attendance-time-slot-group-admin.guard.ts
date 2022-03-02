@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { GroupRepository } from '../repositories/group.repository';
-import { AttendanceRepository } from 'src/repositories/attendance.repository';
+import { AttendanceRepository } from '../repositories/attendance.repository';
 
 @Injectable()
 export class AttendanceTimeSlotGroupAdminGuard implements CanActivate {

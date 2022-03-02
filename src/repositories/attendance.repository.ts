@@ -17,11 +17,12 @@ export class AttendanceRepository extends BaseRepository<AttendanceDocument> {
     userId: string,
     signFileId: string,
   ) {
-    const attendanceSignWithSameSignFile = await this.Model.find({
-      user: userId,
-      signFile: signFileId,
-    });
+    const attendanceSignWithSameSignFileCount = await this.Model.countDocuments(
+      {
+        signFile: signFileId,
+      },
+    );
 
-    return attendanceSignWithSameSignFile.length > 0;
+    return attendanceSignWithSameSignFileCount > 0;
   }
 }
