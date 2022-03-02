@@ -16,7 +16,7 @@ export class Attendance {
   @Prop({ required: true, type: Types.ObjectId, ref: User.name })
   user: User;
 
-  @Prop({ type: Types.ObjectId, ref: File.name })
+  @Prop({ type: Types.ObjectId, ref: File.name, unique: true, sparse: true })
   signFile: File;
 
   @Prop()

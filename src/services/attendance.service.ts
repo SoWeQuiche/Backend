@@ -121,23 +121,22 @@ export class AttendanceService {
       throw new NotFoundException('Sign file not found');
     }
 
-    const attendesSignWithSameSignFile =
-      await this.attendanceRepository.isSignFileAreadyUseForSignAnAttendance(
-        userId,
-        signFile._id,
-      );
-
-    if (attendesSignWithSameSignFile) {
-      throw new ForbiddenException(
-        'You cannot sign with same signature twice. Please create new one.',
-      );
-    }
-
     attendance.signFile = signFile._id;
     attendance.isPresent = true;
     attendance.signDate = new Date();
 
-    await attendance.save();
+    try {
+      await attendance.save();
+    } catch (err) {
+      // TODO: refactor this into mongoose custom driver
+      if (err.code === 11000) {
+        throw new ForbiddenException(
+          'You cannot sign with same signature twice. Please create new one.',
+        );
+      }
+      console.log({ err });
+      throw err;
+    }
   };
 
   getUserAttendances = async (userId: string): Promise<Attendance[]> =>
