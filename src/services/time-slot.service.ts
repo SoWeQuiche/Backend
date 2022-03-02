@@ -64,6 +64,9 @@ export class TimeSlotService {
     }
 
     const concurentTimeSlot = await this.timeSlotRepository.findManyBy({
+      _id: {
+        $ne: existingTimeSlot._id,
+      },
       group: existingTimeSlot.group,
       startDate: {
         $gte: set.startDate,
