@@ -51,12 +51,18 @@ export class OrganizationService {
       { hiddenPropertiesToSelect: ['admins'] },
     );
 
+    if (!organization) {
+      throw new NotFoundException();
+    }
+
     let user = await this.authenticationService.findUserByMail(parameters.mail);
 
     if (!user) {
       user = await this.authenticationService.registerUser(parameters.mail);
 
-      await this.mailService.sendActivationMail(user, organization);
+      this.mailService.sendActivationMail(user, organization);
+    } else {
+      this.mailService.sendAddToOrganizationMail(user, organization);
     }
 
     if (!organization.admins.includes(user._id)) {
@@ -74,12 +80,18 @@ export class OrganizationService {
       { hiddenPropertiesToSelect: ['users'] },
     );
 
+    if (!organization) {
+      throw new NotFoundException();
+    }
+
     let user = await this.authenticationService.findUserByMail(parameters.mail);
 
     if (!user) {
       user = await this.authenticationService.registerUser(parameters.mail);
 
-      await this.mailService.sendActivationMail(user, organization);
+      this.mailService.sendActivationMail(user, organization);
+    } else {
+      this.mailService.sendAddToOrganizationMail(user, organization);
     }
 
     if (!organization.users.includes(user._id)) {
