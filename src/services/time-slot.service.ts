@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -34,13 +34,7 @@ export class TimeSlotService {
     });
 
     if (concurentTimeSlot.length > 0) {
-      throw new BadRequestException(
-        {
-          statusCode: 400,
-          message: 'Overlapping another existing Time Slot',
-        },
-        'Overlapping another existing Time Slot',
-      );
+      throw new ConflictException('Overlapping another existing Time Slot');
     }
 
     return this.timeSlotRepository.insert({
@@ -70,6 +64,9 @@ export class TimeSlotService {
     }
 
     const concurentTimeSlot = await this.timeSlotRepository.findManyBy({
+      _id: {
+        $ne: existingTimeSlot._id,
+      },
       group: existingTimeSlot.group,
       startDate: {
         $gte: set.startDate,
@@ -80,13 +77,7 @@ export class TimeSlotService {
     });
 
     if (concurentTimeSlot.length > 0) {
-      throw new BadRequestException(
-        {
-          statusCode: 400,
-          message: 'Overlapping another existing Time Slot',
-        },
-        'Overlapping another existing Time Slot',
-      );
+      throw new ConflictException('Overlapping another existing Time Slot');
     }
 
     existingTimeSlot.startDate = new Date(set.startDate);
@@ -98,10 +89,10 @@ export class TimeSlotService {
   deleteOneGroupTimeSlotById = async (timeSlotId: string): Promise<boolean> =>
     this.timeSlotRepository.deleteOnyBy({ _id: timeSlotId });
 
-  getUserTimeSlots = async (user: User) => {
+  getUserTimeSlots = async (userId: string) => {
     const userGroups = await this.groupRepository.findManyBy({
       users: {
-        $in: user._id,
+        $in: userId,
       },
     });
 

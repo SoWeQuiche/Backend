@@ -1,19 +1,26 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { GroupRepository } from '../repositories/group.repository';
+import { AttendanceRepository } from '../repositories/attendance.repository';
 
 @Injectable()
-export class TimeSlotOrganizationAdminGuard implements CanActivate {
+export class AttendanceTimeSlotGroupAdminGuard implements CanActivate {
   constructor(
     private readonly groupRepository: GroupRepository,
     private readonly timeSlotRepository: TimeSlotRepository,
+    private readonly attendanceRepository: AttendanceRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
+    const attendance = await this.attendanceRepository.findOneById(
+      request.params.attendanceId,
+    );
+
     const timeSlot = await this.timeSlotRepository.findOneById(
-      request.params.timeSlotId,
+      // @ts-ignore
+      attendance.timeSlot,
     );
 
     if (!timeSlot) {
@@ -22,10 +29,7 @@ export class TimeSlotOrganizationAdminGuard implements CanActivate {
 
     const group = await this.groupRepository.findOneBy(
       { _id: timeSlot.group },
-      {
-        populate: ['organization'],
-        hiddenPropertiesToSelect: ['admins'],
-      },
+      { populate: ['organization'], hiddenPropertiesToSelect: ['admins'] },
     );
 
     if (!group || !group.organization) {
@@ -33,6 +37,7 @@ export class TimeSlotOrganizationAdminGuard implements CanActivate {
     }
 
     if (
+      !group.admins.includes(request.user._id) &&
       !group.organization.admins.includes(request.user._id) &&
       !request.user.isAdmin
     ) {

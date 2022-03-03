@@ -16,6 +16,9 @@ export class TimeSlot {
 
   @Prop({ required: true })
   endDate: Date;
+
+  @Prop({ select: false })
+  __v: number;
 }
 
 export const TimeSlotSchema = SchemaFactory.createForClass(TimeSlot);

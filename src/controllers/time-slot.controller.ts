@@ -25,7 +25,7 @@ export class TimeSlotController {
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
   getUserTimeSlots(@Req() req) {
-    return this.timeSlotService.getUserTimeSlots(req.user);
+    return this.timeSlotService.getUserTimeSlots(req.user._id);
   }
 
   @Get('/:timeSlotId')

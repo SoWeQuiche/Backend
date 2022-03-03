@@ -19,9 +19,17 @@ export class OrganizationAdminGuard implements CanActivate {
       { hiddenPropertiesToSelect: ['admins'] },
     );
 
-    return !(
-      !organization ||
-      (!organization.admins.includes(request.user._id) && !request.user.isAdmin)
-    );
+    if (!organization) {
+      return false;
+    }
+
+    if (
+      !organization.admins.includes(request.user._id) &&
+      !request.user.isAdmin
+    ) {
+      return false;
+    }
+
+    return true;
   }
 }
