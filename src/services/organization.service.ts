@@ -109,21 +109,13 @@ export class OrganizationService {
     userId: string,
   ): Promise<void> => {
     await this.groupRepository.Model.updateOne(
-      {
-        organization: organizationId,
-      },
-      {
-        $pull: { users: userId },
-      },
+      { organization: organizationId },
+      { $pull: { users: userId } },
     );
 
     await this.organizationRepository.Model.updateOne(
-      {
-        _id: organizationId,
-      },
-      {
-        $pull: { users: userId },
-      },
+      { _id: organizationId ,
+      { $pull: { users: userId } },
     );
   };
 
@@ -132,12 +124,8 @@ export class OrganizationService {
     userId: string,
   ): Promise<void> => {
     await this.organizationRepository.Model.updateOne(
-      {
-        _id: organizationId,
-      },
-      {
-        $pull: { admins: userId },
-      },
+      { _id: organizationId },
+      { $pull: { admins: userId } },
     );
   };
 }

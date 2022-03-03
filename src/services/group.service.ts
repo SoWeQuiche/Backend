@@ -114,12 +114,8 @@ export class GroupService {
 
   removeAdmin = async (groupId: string, userId: string): Promise<void> => {
     await this.groupRepository.Model.updateOne(
-      {
-        _id: groupId,
-      },
-      {
-        $pull: { admins: userId },
-      },
+      { _id: groupId },
+      { $pull: { admins: userId } },
     );
   };
 }
