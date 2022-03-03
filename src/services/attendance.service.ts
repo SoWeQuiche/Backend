@@ -37,7 +37,7 @@ export class AttendanceService {
     const startDate = moment(timeSlot.startDate);
     const now = moment();
 
-    if (startDate.isBefore(now.subtract(10, 'minutes'))) {
+    if (startDate.subtract(10, 'minutes').isBefore(now)) {
       throw new BadRequestException({
         statusCode: 400,
         message: "It's too early to start attendance signing",

@@ -10,8 +10,8 @@ import { AuthenticationService } from './authentication.service';
 import { MailService } from './mail.service';
 import { NameDTO } from '../dto/name.dto';
 import { Group } from '../models/group.model';
-import { Types } from 'mongoose';
 import { User } from '../models/user.model';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class GroupService {
@@ -44,7 +44,7 @@ export class GroupService {
 
   getGroupsForOrganization = async (organizationId: string) =>
     this.groupRepository.findManyBy({
-      organization: new Types.ObjectId(organizationId),
+      organization: new mongoose.Types.ObjectId(organizationId),
     });
 
   listGroupAdmins = async (groupId: string): Promise<User[]> =>
@@ -103,5 +103,19 @@ export class GroupService {
       group.users.push(user._id);
       await group.save();
     }
+  };
+
+  removeUser = async (groupId: string, userId: string): Promise<void> => {
+    await this.groupRepository.Model.updateOne(
+      { _id: groupId },
+      { $pull: { users: userId },
+    );
+  };
+
+  removeAdmin = async (groupId: string, userId: string): Promise<void> => {
+    await this.groupRepository.Model.updateOne(
+      { _id: groupId },
+      { $pull: { admins: userId } },
+    );
   };
 }

@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/origanization.repository';
 import { GroupRepository } from '../repositories/group.repository';
 import { NameDTO } from '../dto/name.dto';
@@ -11,7 +7,6 @@ import { User } from '../models/user.model';
 import { MailDTO } from '../dto/mail.dto';
 import { MailService } from './mail.service';
 import { AuthenticationService } from './authentication.service';
-import { Group } from '../models/group.model';
 
 @Injectable()
 export class OrganizationService {
@@ -119,5 +114,30 @@ export class OrganizationService {
     return this.organizationRepository.findOneById(organizationId, {
       hiddenPropertiesToSelect: ['admins', 'users'],
     });
+  };
+
+  removeUser = async (
+    organizationId: string,
+    userId: string,
+  ): Promise<void> => {
+    await this.groupRepository.Model.updateOne(
+      { organization: organizationId },
+      { $pull: { users: userId } },
+    );
+
+    await this.organizationRepository.Model.updateOne(
+      { _id: organizationId ,
+      { $pull: { users: userId } },
+    );
+  };
+
+  removeAdmin = async (
+    organizationId: string,
+    userId: string,
+  ): Promise<void> => {
+    await this.organizationRepository.Model.updateOne(
+      { _id: organizationId },
+      { $pull: { admins: userId } },
+    );
   };
 }

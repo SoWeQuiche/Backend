@@ -65,6 +65,16 @@ export class GroupController {
     return this.groupService.addUser(groupId, parameters);
   }
 
+  @Delete('/:groupId/users/:userId')
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  removeUser(
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.groupService.removeUser(groupId, userId);
+  }
+
   @Get('/:groupId/admins')
   @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
@@ -80,5 +90,15 @@ export class GroupController {
     @Body() parameters: MailDTO,
   ) {
     return this.groupService.promoteUser(groupId, parameters);
+  }
+
+  @Delete('/:groupId/admins/:userId')
+  @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  removeAdmin(
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.groupService.removeAdmin(groupId, userId);
   }
 }

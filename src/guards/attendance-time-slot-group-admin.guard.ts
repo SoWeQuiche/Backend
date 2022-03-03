@@ -18,6 +18,10 @@ export class AttendanceTimeSlotGroupAdminGuard implements CanActivate {
       request.params.attendanceId,
     );
 
+    if (!attendance) {
+      return false;
+    }
+
     const timeSlot = await this.timeSlotRepository.findOneById(
       // @ts-ignore
       attendance.timeSlot,

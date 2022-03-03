@@ -66,6 +66,16 @@ export class OrganizationController {
     return this.organizationService.addUser(organizationId, parameters);
   }
 
+  @Delete('/:organizationId/users/:userId')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  removeUser(
+    @Param('organizationId') organizationId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.organizationService.removeUser(organizationId, userId);
+  }
+
   @Get('/:organizationId/admins')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
@@ -81,5 +91,15 @@ export class OrganizationController {
     @Body() parameters: MailDTO,
   ) {
     return this.organizationService.promoteUser(organizationId, parameters);
+  }
+
+  @Delete('/:organizationId/admins/:userId')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  removeAdmin(
+    @Param('organizationId') organizationId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.organizationService.removeAdmin(organizationId, userId);
   }
 }
