@@ -14,10 +14,17 @@ import config from '../config';
 import { SwaIdToken } from '../dto/swa-id-token.dto';
 import { SwaDTO } from '../dto/swa.dto';
 import { ActivationDTO } from '../dto/activation.dto';
+import { RefreshTokenDTO } from 'src/dto/refresh-token.dto';
+import * as cryptoJs from 'crypto-js';
+import { RefreshTokenRepository } from '../repositories/refresh-token.repository';
+import * as moment from 'moment';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly refreshTokenRepository: RefreshTokenRepository,
+  ) {}
 
   registerUser = async (mail: string): Promise<User> => {
     const existingUser = await this.findUserByMail(mail);
@@ -70,7 +77,7 @@ export class AuthenticationService {
 
     return {
       token: this.createJwtToken(user),
-      refreshToken: this.createRefreshToken(user),
+      refreshToken: await this.createRefreshToken(user),
     };
   };
 
@@ -88,7 +95,7 @@ export class AuthenticationService {
     if (existingUser) {
       return {
         token: this.createJwtToken(existingUser),
-        refreshToken: this.createRefreshToken(existingUser),
+        refreshToken: await this.createRefreshToken(existingUser),
       };
     }
 
@@ -100,8 +107,35 @@ export class AuthenticationService {
 
     return {
       token: this.createJwtToken(user),
-      refreshToken: this.createRefreshToken(user),
+      refreshToken: await this.createRefreshToken(user),
     };
+  };
+
+  refreshToken = async (
+    parameters: RefreshTokenDTO,
+  ): Promise<{ token: string; refreshToken: string }> => {
+    const refreshToken = await this.refreshTokenRepository.findOneBy(
+      { token: parameters.refreshToken },
+      { populate: ['user'] },
+    );
+
+    if (!refreshToken || !refreshToken.user || !refreshToken.active) {
+      throw new UnauthorizedException();
+    }
+
+    const tokens = {
+      // @ts-ignore
+      token: this.createJwtToken(refreshToken.user),
+      // @ts-ignore
+      refreshToken: await this.createRefreshToken(refreshToken.user),
+    };
+
+    await this.refreshTokenRepository.updateOneBy(
+      { token: parameters.refreshToken },
+      { active: false },
+    );
+
+    return tokens;
   };
 
   findUserByMail = (mail: string): Promise<User> =>
@@ -112,10 +146,23 @@ export class AuthenticationService {
       expiresIn: config.jwt.expirationTime,
     });
 
-  private createRefreshToken = (user: User): string =>
-    jwt.sign({ _id: user._id }, config.jwt.secretKey, {
-      expiresIn: config.jwt.refreshExpirationTime,
+  createRefreshToken = async (user: User): Promise<string> => {
+    const expirationDate = moment()
+      .add(config.jwtRefresh.expirationTime, 'milliseconds')
+      .unix();
+
+    const token = cryptoJs
+      .SHA256(`${user._id}.${user.mail}.${Date.now()}`)
+      .toString();
+
+    const result = await this.refreshTokenRepository.insert({
+      token,
+      expirationDate,
+      user: user._id,
     });
+
+    return result.token;
+  };
 
   private comparePassword = async ({
     password1,

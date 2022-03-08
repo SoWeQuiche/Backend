@@ -10,7 +10,10 @@ export default {
   jwt: {
     secretKey: process.env.JWT_SECRET_KEY,
     expirationTime: Number(process.env.JWT_EXP),
-    refreshExpirationTime: Number(process.env.REFRESH_EXP),
+  },
+  jwtRefresh: {
+    secretKey: process.env.REFRESH_SECRET_KEY,
+    expirationTime: Number(process.env.REFRESH_EXP),
   },
   swa: {
     teamId: process.env.SWA_TEAM_ID,
