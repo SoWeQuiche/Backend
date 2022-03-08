@@ -12,7 +12,6 @@ export default {
     expirationTime: Number(process.env.JWT_EXP),
   },
   jwtRefresh: {
-    secretKey: process.env.REFRESH_SECRET_KEY,
     expirationTime: Number(process.env.REFRESH_EXP),
   },
   swa: {
