@@ -51,7 +51,9 @@ export class AuthenticationService {
     return user.save();
   };
 
-  login = async (parameters: LoginDTO): Promise<{ token: string }> => {
+  login = async (
+    parameters: LoginDTO,
+  ): Promise<{ token: string; refreshToken: string }> => {
     const user = await this.userRepository.findOneBy(
       { mail: parameters.mail },
       { hiddenPropertiesToSelect: ['password'] },
@@ -66,10 +68,15 @@ export class AuthenticationService {
       throw new UnauthorizedException();
     }
 
-    return { token: this.createToken(user) };
+    return {
+      token: this.createJwtToken(user),
+      refreshToken: this.createRefreshToken(user),
+    };
   };
 
-  loginWithApple = async (parameters: SwaDTO): Promise<{ token: string }> => {
+  loginWithApple = async (
+    parameters: SwaDTO,
+  ): Promise<{ token: string; refreshToken: string }> => {
     const decodedToken = await this.verifyAppleToken(
       parameters.authorization.id_token,
     );
@@ -79,7 +86,10 @@ export class AuthenticationService {
     });
 
     if (existingUser) {
-      return { token: this.createToken(existingUser) };
+      return {
+        token: this.createJwtToken(existingUser),
+        refreshToken: this.createRefreshToken(existingUser),
+      };
     }
 
     const user = await this.userRepository.insert({
@@ -88,15 +98,23 @@ export class AuthenticationService {
       lastname: parameters.user.name.lastName,
     });
 
-    return { token: this.createToken(user) };
+    return {
+      token: this.createJwtToken(user),
+      refreshToken: this.createRefreshToken(user),
+    };
   };
 
   findUserByMail = (mail: string): Promise<User> =>
     this.userRepository.findOneBy({ mail });
 
-  private createToken = (user: User): string =>
+  private createJwtToken = (user: User): string =>
     jwt.sign({ _id: user._id }, config.jwt.secretKey, {
       expiresIn: config.jwt.expirationTime,
+    });
+
+  private createRefreshToken = (user: User): string =>
+    jwt.sign({ _id: user._id }, config.jwt.secretKey, {
+      expiresIn: config.jwt.refreshExpirationTime,
     });
 
   private comparePassword = async ({
@@ -106,19 +124,6 @@ export class AuthenticationService {
 
   private encryptPassword = async (password: string): Promise<string> =>
     bCrypt.hash(password, 15);
-
-  private verifyAppToken = async (token: string): Promise<{ _id: string }> =>
-    new Promise((resolve, reject) => {
-      jwt.verify(token, config.jwt.secretKey, async (err, decoded) => {
-        if (err || !decoded) {
-          reject(new UnauthorizedException());
-
-          return;
-        }
-
-        resolve(decoded);
-      });
-    });
 
   private getAppleJwtSigningKey = (header, callback) => {
     const client = jwksClient({
@@ -135,6 +140,19 @@ export class AuthenticationService {
   private verifyAppleToken = async (token: string): Promise<SwaIdToken> =>
     new Promise((resolve, reject) => {
       jwt.verify(token, this.getAppleJwtSigningKey, async (err, decoded) => {
+        if (err || !decoded) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        resolve(decoded);
+      });
+    });
+
+  private verifyAppToken = async (token: string): Promise<{ _id: string }> =>
+    new Promise((resolve, reject) => {
+      jwt.verify(token, config.jwt.secretKey, async (err, decoded) => {
         if (err || !decoded) {
           reject(new UnauthorizedException());
 
