@@ -72,6 +72,6 @@ export class AttendanceController {
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
   getUserAttendances(@Req() request) {
-    return this.attendanceService.getUserAttendances(request.user._id);
+    return this.attendanceService.getUserAttendances(request.user);
   }
 }
