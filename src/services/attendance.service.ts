@@ -102,15 +102,23 @@ export class AttendanceService {
       throw new NotFoundException('Attendance not found');
     }
 
+    if (attendance.isPresent === false) {
+      throw new ForbiddenException('You cannot sign when you are absent');
+    }
+
     // TODO: add sign key validation (getted with QRCode) or isPresent === true to be able to sign
 
     if (attendance.signDate) {
       throw new ForbiddenException('You cannot sign twice');
     }
 
-    if (attendance.isPresent === false) {
-      throw new ForbiddenException('You cannot sign when you are absent');
+    if (attendance.timeSlot.endDate > new Date()) {
+      throw new ForbiddenException(
+        "It's too late to sign, your timeslot as ended",
+      );
     }
+
+    // TODO: Si la date de fin de signature sur le TimeSlot est dépassée et que le isPresent est pas défini => refuser
 
     const signFile = await this.fileRepository.findOneById(set.signFileId);
 
