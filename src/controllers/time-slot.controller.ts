@@ -21,7 +21,7 @@ import { TimeSlotService } from '../services/time-slot.service';
 export class TimeSlotController {
   constructor(private readonly timeSlotService: TimeSlotService) {}
 
-  @Get()
+  @Get('/me')
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
   getUserTimeSlots(@Req() req) {
