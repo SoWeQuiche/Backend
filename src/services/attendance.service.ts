@@ -145,7 +145,7 @@ export class AttendanceService {
   };
 
   getUserAttendances = async (userId: string): Promise<Attendance[]> =>
-    this.attendanceRepository.findManyBy({
+    this.attendanceRepository.Model.find({
       user: userId,
-    });
+    }).populate('timeSlot', 'user');
 }
