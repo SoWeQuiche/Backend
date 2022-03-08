@@ -147,50 +147,6 @@ export class AttendanceService {
     }
   };
 
-  getUserAttendances = async (user: User): Promise<any[]> =>
-    this.groupRepository.Model.aggregate([
-      { $match: { users: { $in: [user._id] } } },
-      {
-        $lookup: {
-          from: 'timeslots',
-          localField: '_id',
-          foreignField: 'group',
-          as: 'timeSlot',
-        },
-      },
-      { $unwind: { path: '$timeSlot', preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: 'attendances',
-          localField: 'timeSlot._id',
-          foreignField: 'timeSlot',
-          as: 'attendance',
-        },
-      },
-      { $unwind: { path: '$attendance', preserveNullAndEmptyArrays: true } }, // TODO: trouver une solution pour ne pas supprimer les éléments qui n'ont pas d'attendance à l'application de l'unwind
-      {
-        $project: {
-          _id: 0,
-          groupName: '$name',
-          organizationId: '$organization',
-          groupId: '$_id',
-          timeSlotId: '$timeSlot._id',
-          attendanceId: '$attendance._id',
-          endDate: '$timeSlot.endDate',
-          startDate: '$timeSlot.startDate',
-          isPresent: '$attendance.isPresent',
-          signDate: '$attendance.signDate',
-        },
-      },
-      {
-        $project: {
-          name: 0,
-          timeSlot: 0,
-          attendance: 0,
-        },
-      },
-    ]);
-
   deleteAttendance = async (attendanceId: string): Promise<any> =>
     this.attendanceRepository.deleteOnyBy({ _id: attendanceId });
 }

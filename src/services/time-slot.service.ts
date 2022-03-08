@@ -89,17 +89,47 @@ export class TimeSlotService {
   deleteOneGroupTimeSlotById = async (timeSlotId: string): Promise<boolean> =>
     this.timeSlotRepository.deleteOnyBy({ _id: timeSlotId });
 
-  getUserTimeSlots = async (userId: string) => {
-    const userGroups = await this.groupRepository.findManyBy({
-      users: {
-        $in: userId,
+  getUserTimeSlots = async (userId: string): Promise<any[]> =>
+    this.groupRepository.Model.aggregate([
+      { $match: { users: { $in: [userId] } } },
+      {
+        $lookup: {
+          from: 'timeslots',
+          localField: '_id',
+          foreignField: 'group',
+          as: 'timeSlot',
+        },
       },
-    });
-
-    const allTimeSlots = await Promise.all(
-      userGroups.map((group) => this.getAllGroupTimeSlots(group._id)),
-    );
-
-    return allTimeSlots.flat();
-  };
+      { $unwind: { path: '$timeSlot', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'attendances',
+          localField: 'timeSlot._id',
+          foreignField: 'timeSlot',
+          as: 'attendance',
+        },
+      },
+      { $unwind: { path: '$attendance', preserveNullAndEmptyArrays: true } }, // TODO: trouver une solution pour ne pas supprimer les éléments qui n'ont pas d'attendance à l'application de l'unwind
+      {
+        $project: {
+          _id: 0,
+          groupName: '$name',
+          organizationId: '$organization',
+          groupId: '$_id',
+          timeSlotId: '$timeSlot._id',
+          attendanceId: '$attendance._id',
+          endDate: '$timeSlot.endDate',
+          startDate: '$timeSlot.startDate',
+          isPresent: '$attendance.isPresent',
+          signDate: '$attendance.signDate',
+        },
+      },
+      {
+        $project: {
+          name: 0,
+          timeSlot: 0,
+          attendance: 0,
+        },
+      },
+    ]);
 }
