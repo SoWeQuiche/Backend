@@ -190,4 +190,7 @@ export class AttendanceService {
         },
       },
     ]);
+
+  deleteAttendance = async (attendanceId: string): Promise<any> =>
+    this.attendanceRepository.deleteOnyBy({ _id: attendanceId });
 }
