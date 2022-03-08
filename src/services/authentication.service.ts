@@ -14,10 +14,17 @@ import config from '../config';
 import { SwaIdToken } from '../dto/swa-id-token.dto';
 import { SwaDTO } from '../dto/swa.dto';
 import { ActivationDTO } from '../dto/activation.dto';
+import { RefreshTokenDTO } from 'src/dto/refresh-token.dto';
+import * as cryptoJs from 'crypto-js';
+import { RefreshTokenRepository } from '../repositories/refresh-token.repository';
+import * as moment from 'moment';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly refreshTokenRepository: RefreshTokenRepository,
+  ) {}
 
   registerUser = async (mail: string): Promise<User> => {
     const existingUser = await this.findUserByMail(mail);
@@ -51,7 +58,9 @@ export class AuthenticationService {
     return user.save();
   };
 
-  login = async (parameters: LoginDTO): Promise<{ token: string }> => {
+  login = async (
+    parameters: LoginDTO,
+  ): Promise<{ token: string; refreshToken: string }> => {
     const user = await this.userRepository.findOneBy(
       { mail: parameters.mail },
       { hiddenPropertiesToSelect: ['password'] },
@@ -66,10 +75,15 @@ export class AuthenticationService {
       throw new UnauthorizedException();
     }
 
-    return { token: this.createToken(user) };
+    return {
+      token: this.createJwtToken(user),
+      refreshToken: await this.createRefreshToken(user),
+    };
   };
 
-  loginWithApple = async (parameters: SwaDTO): Promise<{ token: string }> => {
+  loginWithApple = async (
+    parameters: SwaDTO,
+  ): Promise<{ token: string; refreshToken: string }> => {
     const decodedToken = await this.verifyAppleToken(
       parameters.authorization.id_token,
     );
@@ -79,7 +93,10 @@ export class AuthenticationService {
     });
 
     if (existingUser) {
-      return { token: this.createToken(existingUser) };
+      return {
+        token: this.createJwtToken(existingUser),
+        refreshToken: await this.createRefreshToken(existingUser),
+      };
     }
 
     const user = await this.userRepository.insert({
@@ -88,16 +105,64 @@ export class AuthenticationService {
       lastname: parameters.user.name.lastName,
     });
 
-    return { token: this.createToken(user) };
+    return {
+      token: this.createJwtToken(user),
+      refreshToken: await this.createRefreshToken(user),
+    };
+  };
+
+  refreshToken = async (
+    parameters: RefreshTokenDTO,
+  ): Promise<{ token: string; refreshToken: string }> => {
+    const refreshToken = await this.refreshTokenRepository.findOneBy(
+      { token: parameters.refreshToken },
+      { populate: ['user'] },
+    );
+
+    if (!refreshToken || !refreshToken.user || !refreshToken.active) {
+      throw new UnauthorizedException();
+    }
+
+    const tokens = {
+      // @ts-ignore
+      token: this.createJwtToken(refreshToken.user),
+      // @ts-ignore
+      refreshToken: await this.createRefreshToken(refreshToken.user),
+    };
+
+    await this.refreshTokenRepository.updateOneBy(
+      { token: parameters.refreshToken },
+      { active: false },
+    );
+
+    return tokens;
   };
 
   findUserByMail = (mail: string): Promise<User> =>
     this.userRepository.findOneBy({ mail });
 
-  private createToken = (user: User): string =>
+  private createJwtToken = (user: User): string =>
     jwt.sign({ _id: user._id }, config.jwt.secretKey, {
       expiresIn: config.jwt.expirationTime,
     });
+
+  createRefreshToken = async (user: User): Promise<string> => {
+    const expirationDate = moment()
+      .add(config.jwtRefresh.expirationTime, 'milliseconds')
+      .unix();
+
+    const token = cryptoJs
+      .SHA256(`${user._id}.${user.mail}.${Date.now()}`)
+      .toString();
+
+    const result = await this.refreshTokenRepository.insert({
+      token,
+      expirationDate,
+      user: user._id,
+    });
+
+    return result.token;
+  };
 
   private comparePassword = async ({
     password1,
@@ -106,19 +171,6 @@ export class AuthenticationService {
 
   private encryptPassword = async (password: string): Promise<string> =>
     bCrypt.hash(password, 15);
-
-  private verifyAppToken = async (token: string): Promise<{ _id: string }> =>
-    new Promise((resolve, reject) => {
-      jwt.verify(token, config.jwt.secretKey, async (err, decoded) => {
-        if (err || !decoded) {
-          reject(new UnauthorizedException());
-
-          return;
-        }
-
-        resolve(decoded);
-      });
-    });
 
   private getAppleJwtSigningKey = (header, callback) => {
     const client = jwksClient({
@@ -135,6 +187,19 @@ export class AuthenticationService {
   private verifyAppleToken = async (token: string): Promise<SwaIdToken> =>
     new Promise((resolve, reject) => {
       jwt.verify(token, this.getAppleJwtSigningKey, async (err, decoded) => {
+        if (err || !decoded) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        resolve(decoded);
+      });
+    });
+
+  private verifyAppToken = async (token: string): Promise<{ _id: string }> =>
+    new Promise((resolve, reject) => {
+      jwt.verify(token, config.jwt.secretKey, async (err, decoded) => {
         if (err || !decoded) {
           reject(new UnauthorizedException());
 
