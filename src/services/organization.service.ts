@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/origanization.repository';
 import { GroupRepository } from '../repositories/group.repository';
 import { NameDTO } from '../dto/name.dto';
@@ -11,7 +7,6 @@ import { User } from '../models/user.model';
 import { MailDTO } from '../dto/mail.dto';
 import { MailService } from './mail.service';
 import { AuthenticationService } from './authentication.service';
-import { Group } from '../models/group.model';
 
 @Injectable()
 export class OrganizationService {
@@ -26,25 +21,21 @@ export class OrganizationService {
     return this.organizationRepository.insert(parameters);
   };
 
-  createGroup = async (
-    organizationId: string,
-    parameters: NameDTO,
-  ): Promise<Group> => {
-    const organization = await this.organizationRepository.findOneById(
-      organizationId,
-      { hiddenPropertiesToSelect: ['groups'] },
-    );
+  listOrganizationUsers = async (organizationId: string): Promise<User[]> =>
+    // @ts-ignore
+    this.organizationRepository
+      .findOneById(organizationId, {
+        populate: ['users'],
+      })
+      .then((organization) => organization.users);
 
-    if (!organization) throw new NotFoundException('Organization not found');
-
-    const group = await this.groupRepository.insert({
-      name: parameters.name,
-      organization: organization._id,
-    });
-    if (!group) throw new BadRequestException('Group not created');
-
-    return group;
-  };
+  listOrganizationAdmins = async (organizationId: string): Promise<User[]> =>
+    // @ts-ignore
+    this.organizationRepository
+      .findOneById(organizationId, {
+        populate: ['admins'],
+      })
+      .then((organization) => organization.admins);
 
   promoteUser = async (
     organizationId: string,
@@ -55,12 +46,18 @@ export class OrganizationService {
       { hiddenPropertiesToSelect: ['admins'] },
     );
 
+    if (!organization) {
+      throw new NotFoundException();
+    }
+
     let user = await this.authenticationService.findUserByMail(parameters.mail);
 
     if (!user) {
       user = await this.authenticationService.registerUser(parameters.mail);
 
-      await this.mailService.sendActivationMail(user, organization);
+      this.mailService.sendActivationMail(user, organization);
+    } else {
+      this.mailService.sendAddToOrganizationMail(user, organization);
     }
 
     if (!organization.admins.includes(user._id)) {
@@ -78,12 +75,18 @@ export class OrganizationService {
       { hiddenPropertiesToSelect: ['users'] },
     );
 
+    if (!organization) {
+      throw new NotFoundException();
+    }
+
     let user = await this.authenticationService.findUserByMail(parameters.mail);
 
     if (!user) {
       user = await this.authenticationService.registerUser(parameters.mail);
 
-      await this.mailService.sendActivationMail(user, organization);
+      this.mailService.sendActivationMail(user, organization);
+    } else {
+      this.mailService.sendAddToOrganizationMail(user, organization);
     }
 
     if (!organization.users.includes(user._id)) {
@@ -92,7 +95,7 @@ export class OrganizationService {
     }
   };
 
-  deleteGroup = async (organizationId: string) =>
+  deleteOrganization = async (organizationId: string) =>
     this.organizationRepository.deleteOnyBy({ _id: organizationId });
 
   listManagedOrganizations = async (user: User): Promise<Organization[]> => {
@@ -109,8 +112,32 @@ export class OrganizationService {
     organizationId: string,
   ): Promise<Organization> => {
     return this.organizationRepository.findOneById(organizationId, {
-      populate: ['groups'],
       hiddenPropertiesToSelect: ['admins', 'users'],
     });
+  };
+
+  removeUser = async (
+    organizationId: string,
+    userId: string,
+  ): Promise<void> => {
+    await this.groupRepository.Model.updateOne(
+      { organization: organizationId },
+      { $pull: { users: userId } },
+    );
+
+    await this.organizationRepository.Model.updateOne(
+      { _id: organizationId },
+      { $pull: { users: userId } },
+    );
+  };
+
+  removeAdmin = async (
+    organizationId: string,
+    userId: string,
+  ): Promise<void> => {
+    await this.organizationRepository.Model.updateOne(
+      { _id: organizationId },
+      { $pull: { admins: userId } },
+    );
   };
 }

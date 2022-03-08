@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()
@@ -13,10 +8,6 @@ export class AdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    if (!request.user.isAdmin) {
-      throw new UnauthorizedException();
-    }
-
-    return true;
+    return request.user.isAdmin;
   }
 }

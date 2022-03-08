@@ -8,13 +8,8 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { OrganizationService } from '../services/organization.service';
-import {
-  ApiOkResponse,
-  ApiSecurity,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
 import { JWTGuard } from '../guards/jwt.guard';
 import { AdminGuard } from '../guards/admin.guard';
 import { NameDTO } from '../dto/name.dto';
@@ -28,8 +23,6 @@ export class OrganizationController {
 
   @Get()
   @UseGuards(JWTGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   listManagedOrganizations(@Req() request) {
     return this.organizationService.listManagedOrganizations(request.user);
@@ -37,8 +30,6 @@ export class OrganizationController {
 
   @Post()
   @UseGuards(JWTGuard, AdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   createOrganization(@Body() parameters: NameDTO) {
     return this.organizationService.createOrganization(parameters);
@@ -46,38 +37,54 @@ export class OrganizationController {
 
   @Get('/:organizationId')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
   listGroups(@Param('organizationId') organizationId: string) {
     return this.organizationService.getOrganizationDetails(organizationId);
   }
 
   @Delete('/:organizationId')
-  @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
+  @UseGuards(JWTGuard, AdminGuard)
   @ApiSecurity('Bearer')
   deleteOrganization(@Param('organizationId') organizationId: string) {
-    return this.organizationService.deleteGroup(organizationId);
+    return this.organizationService.deleteOrganization(organizationId);
   }
 
-  @Post('/:organizationId/groups')
+  @Get('/:organizationId/users')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
-  createGroup(
-    @Param('organizationId') organizationId: string,
-    @Body() parameters: NameDTO,
-  ) {
-    return this.organizationService.createGroup(organizationId, parameters);
+  listOrganizationUsers(@Param('organizationId') organizationId: string) {
+    return this.organizationService.listOrganizationUsers(organizationId);
   }
 
-  @Post('/:organizationId/promote')
+  @Post('/:organizationId/users')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
+  @ApiSecurity('Bearer')
+  addUser(
+    @Param('organizationId') organizationId: string,
+    @Body() parameters: MailDTO,
+  ) {
+    return this.organizationService.addUser(organizationId, parameters);
+  }
+
+  @Delete('/:organizationId/users/:userId')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  removeUser(
+    @Param('organizationId') organizationId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.organizationService.removeUser(organizationId, userId);
+  }
+
+  @Get('/:organizationId/admins')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  listOrganizationAdmins(@Param('organizationId') organizationId: string) {
+    return this.organizationService.listOrganizationAdmins(organizationId);
+  }
+
+  @Post('/:organizationId/admins')
+  @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
   promoteToAdmin(
     @Param('organizationId') organizationId: string,
@@ -86,15 +93,13 @@ export class OrganizationController {
     return this.organizationService.promoteUser(organizationId, parameters);
   }
 
-  @Post('/:organizationId/users')
+  @Delete('/:organizationId/admins/:userId')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
   @ApiSecurity('Bearer')
-  addUser(
+  removeAdmin(
     @Param('organizationId') organizationId: string,
-    @Body() parameters: MailDTO,
+    @Param('userId') userId: string,
   ) {
-    return this.organizationService.addUser(organizationId, parameters);
+    return this.organizationService.removeAdmin(organizationId, userId);
   }
 }

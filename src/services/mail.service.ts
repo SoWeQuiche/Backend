@@ -33,13 +33,25 @@ export class MailService {
       },
     });
 
+  sendAddToOrganizationMail = (user: User, organization: Organization) =>
+    this.sendMail({
+      to: user.mail,
+      template: MailTemplate.addToOrganization,
+      data: {
+        organizationName: organization.name,
+        firstname: user.firstname,
+        lastname: user.lastname,
+      },
+    });
+
   sendMail = async (params: SendMailParams) => {
+    const subject = this.getSubject(params.template);
     try {
       await this.transporter.sendMail({
         from: `"SoWeQuiches" <${config.mail.from}>`,
         to: params.to,
-        subject: this.getSubject(params.template),
-        html: this.getTemplate(params.template, params.data), // html body
+        subject,
+        html: this.getTemplate(params.template, { subject, ...params.data }), // html body
       });
     } catch (e) {
       console.log(e);
@@ -61,6 +73,8 @@ export class MailService {
     switch (template) {
       case MailTemplate.registration:
         return 'Activation de compte - SoWeQuiches';
+      case MailTemplate.addToOrganization:
+        return 'Nouvelle Organisation - SoWeQuiches';
     }
   };
 }
@@ -73,4 +87,5 @@ type SendMailParams = {
 
 export enum MailTemplate {
   registration = 'registration',
+  addToOrganization = 'add-to-organization',
 }

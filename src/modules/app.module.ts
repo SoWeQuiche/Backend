@@ -4,7 +4,7 @@ import { AppController } from '../controllers/app.controller';
 import config from '../config';
 import { AuthenticationController } from '../controllers/authentication.controller';
 import { AuthenticationService } from '../services/authentication.service';
-import { MongoModule } from './mondo.module';
+import { MongoModule } from './mongo.module';
 import { OrganizationController } from '../controllers/organization.controller';
 import { OrganizationService } from '../services/organization.service';
 import { AWSService } from '../services/aws.service';
@@ -13,6 +13,10 @@ import { GroupController } from '../controllers/group.controller';
 import { GroupService } from '../services/group.service';
 import { AppService } from '../services/app.service';
 import { MailService } from '../services/mail.service';
+import { TimeSlotService } from '../services/time-slot.service';
+import { TimeSlotController } from '../controllers/time-slot.controller';
+import { AttendanceService } from '../services/attendance.service';
+import { AttendanceController } from '../controllers/attendance.controller';
 
 @Module({
   imports: [MongooseModule.forRoot(config.mongoUrl), MongoModule],
@@ -23,12 +27,16 @@ import { MailService } from '../services/mail.service';
     GroupService,
     AWSService,
     MailService,
+    TimeSlotService,
+    AttendanceService,
   ],
   controllers: [
     AppController,
     AuthenticationController,
     OrganizationController,
     GroupController,
+    TimeSlotController,
+    AttendanceController,
     FileController,
   ],
 })

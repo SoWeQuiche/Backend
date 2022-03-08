@@ -8,14 +8,20 @@ import { Group, GroupSchema } from '../models/group.model';
 import { GroupRepository } from '../repositories/group.repository';
 import { File, FileSchema } from '../models/file.model';
 import { FileRepository } from '../repositories/file.repository';
+import { TimeSlot, TimeSlotSchema } from '../models/time-slot.model';
+import { TimeSlotRepository } from '../repositories/time-slot.repository';
+import { AttendanceRepository } from '../repositories/attendance.repository';
+import { AttencandeSchema, Attendance } from '../models/attendance.model';
 
 @Module({
   imports: [
-    NestMongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    NestMongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
-    NestMongooseModule.forFeature([{ name: Group.name, schema: GroupSchema }]),
     NestMongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: File.name, schema: FileSchema },
+      { name: Group.name, schema: GroupSchema },
       { name: Organization.name, schema: OrganizationSchema },
+      { name: TimeSlot.name, schema: TimeSlotSchema },
+      { name: Attendance.name, schema: AttencandeSchema },
     ]),
   ],
   providers: [
@@ -23,12 +29,16 @@ import { FileRepository } from '../repositories/file.repository';
     OrganizationRepository,
     GroupRepository,
     FileRepository,
+    TimeSlotRepository,
+    AttendanceRepository,
   ],
   exports: [
     UserRepository,
     OrganizationRepository,
     GroupRepository,
     FileRepository,
+    TimeSlotRepository,
+    AttendanceRepository,
   ],
 })
 export class MongoModule {}
