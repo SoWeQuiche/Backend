@@ -108,7 +108,7 @@ export class GroupService {
   removeUser = async (groupId: string, userId: string): Promise<void> => {
     await this.groupRepository.Model.updateOne(
       { _id: groupId },
-      { $pull: { users: userId },
+      { $pull: { users: userId } },
     );
   };
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/origanization.repository';
 import { GroupRepository } from '../repositories/group.repository';
 import { NameDTO } from '../dto/name.dto';
@@ -126,7 +126,7 @@ export class OrganizationService {
     );
 
     await this.organizationRepository.Model.updateOne(
-      { _id: organizationId ,
+      { _id: organizationId },
       { $pull: { users: userId } },
     );
   };
