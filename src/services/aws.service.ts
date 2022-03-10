@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { S3 } from 'aws-sdk';
-import path from 'path';
+import * as path from 'path';
 import config from '../config';
 import { FileRepository } from '../repositories/file.repository';
 
