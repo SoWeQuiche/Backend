@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import mongoose from 'mongoose';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { TimeSlot } from '../models/time-slot.model';

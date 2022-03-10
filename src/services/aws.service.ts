@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { S3 } from 'aws-sdk';
 import path from 'path';
 import config from '../config';
