@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
+import path from 'path';
 import config from '../config';
 import { FileRepository } from '../repositories/file.repository';
 
@@ -32,7 +33,7 @@ export class AWSService {
 
       return this.fileRepository.insert({
         url,
-        filename: file.originalname,
+        filename: crypto.randomUUID() + path.extname(file.originalname),
         type: file.mimetype,
       });
     } catch (e) {
