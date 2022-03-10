@@ -6,7 +6,6 @@ import {
 import mongoose from 'mongoose';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { TimeSlot } from '../models/time-slot.model';
-import { User } from '../models/user.model';
 import { GroupRepository } from '../repositories/group.repository';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 
@@ -100,16 +99,34 @@ export class TimeSlotService {
           as: 'timeSlot',
         },
       },
-      { $unwind: { path: '$timeSlot', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$timeSlot' } },
+      {
+        $addFields: {
+          userId: userId,
+        },
+      },
       {
         $lookup: {
           from: 'attendances',
-          localField: 'timeSlot._id',
-          foreignField: 'timeSlot',
+          localField: 'userId',
+          foreignField: 'user',
+          let: { userId: '$userId', timeSlotId: '$timeSlot._id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$user', '$$userId'] },
+                    { $eq: ['$timeSlot', '$$timeSlotId'] },
+                  ],
+                },
+              },
+            },
+          ],
           as: 'attendance',
         },
       },
-      { $unwind: { path: '$attendance', preserveNullAndEmptyArrays: true } }, // TODO: trouver une solution pour ne pas supprimer les éléments qui n'ont pas d'attendance à l'application de l'unwind
+      { $unwind: { path: '$attendance', preserveNullAndEmptyArrays: true } },
       {
         $project: {
           _id: 0,
@@ -122,13 +139,6 @@ export class TimeSlotService {
           startDate: '$timeSlot.startDate',
           isPresent: '$attendance.isPresent',
           signDate: '$attendance.signDate',
-        },
-      },
-      {
-        $project: {
-          name: 0,
-          timeSlot: 0,
-          attendance: 0,
         },
       },
     ]);
