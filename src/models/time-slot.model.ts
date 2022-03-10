@@ -17,6 +17,12 @@ export class TimeSlot {
   @Prop({ required: true })
   endDate: Date;
 
+  @Prop({ required: true })
+  qrcodeSecret: string;
+
+  @Prop({ required: true })
+  signCode: string;
+
   @Prop({ select: false })
   __v: number;
 }
