@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { TimeSlot } from '../models/time-slot.model';
@@ -39,6 +40,8 @@ export class TimeSlotService {
     return this.timeSlotRepository.insert({
       group: groupObjectId,
       ...parameters,
+      qrcodeSecret: crypto.randomUUID(),
+      signCode: Math.random().toString().slice(2, 8),
     });
   };
 

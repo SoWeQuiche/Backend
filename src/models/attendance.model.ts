@@ -29,4 +29,4 @@ export class Attendance {
   __v: number;
 }
 
-export const AttencandeSchema = SchemaFactory.createForClass(Attendance);
+export const AttendanceSchema = SchemaFactory.createForClass(Attendance);
