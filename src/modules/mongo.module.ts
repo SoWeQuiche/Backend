@@ -11,7 +11,7 @@ import { FileRepository } from '../repositories/file.repository';
 import { TimeSlot, TimeSlotSchema } from '../models/time-slot.model';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { AttendanceRepository } from '../repositories/attendance.repository';
-import { AttencandeSchema, Attendance } from '../models/attendance.model';
+import { AttendanceSchema, Attendance } from '../models/attendance.model';
 import {
   RefreshToken,
   RefreshTokenSchema,
@@ -26,7 +26,7 @@ import { RefreshTokenRepository } from '../repositories/refresh-token.repository
       { name: Group.name, schema: GroupSchema },
       { name: Organization.name, schema: OrganizationSchema },
       { name: TimeSlot.name, schema: TimeSlotSchema },
-      { name: Attendance.name, schema: AttencandeSchema },
+      { name: Attendance.name, schema: AttendanceSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
   ],
