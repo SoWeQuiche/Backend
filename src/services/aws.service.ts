@@ -20,10 +20,14 @@ export class AWSService {
     });
   }
 
-  uploadFile = async (file: Express.Multer.File) => {
+  uploadFile = async (file: {
+    originalname: string;
+    buffer: Buffer;
+    mimetype: string;
+  }) => {
     const params = {
       Bucket: config.aws.bucketName,
-      Key: file.originalname,
+      Key: crypto.randomUUID() + path.extname(file.originalname),
       Body: file.buffer,
     };
 
@@ -34,7 +38,7 @@ export class AWSService {
 
       return this.fileRepository.insert({
         url,
-        filename: crypto.randomUUID() + path.extname(file.originalname),
+        filename: result.Key,
         type: file.mimetype,
       });
     } catch (e) {
