@@ -5,7 +5,8 @@ import { UserDevice } from '../models/user-device.model';
 import { UserDeviceDto } from '../dto/user-device.dto';
 import { DeviceRepository } from '../repositories/user-device.repository';
 import { UserRepository } from '../repositories/user.repository';
-import config from 'src/config';
+import config from '../config';
+import { User } from '../models/user.model';
 
 @Injectable()
 export class NotificationService {
@@ -30,21 +31,24 @@ export class NotificationService {
     data: UserDeviceDto,
   ): Promise<UserDevice> => {
     const deviceAlreadySaved = await this.deviceRepository.findOneBy({
-      userId,
+      user: new mongoose.Types.ObjectId(userId),
       deviceId: data.deviceId,
     });
 
-    return (
-      deviceAlreadySaved ??
-      this.deviceRepository.insert({
-        userId,
-        ...data,
-      })
-    );
+    if (deviceAlreadySaved) {
+      return deviceAlreadySaved;
+    }
+
+    return this.deviceRepository.insert({
+      user: userId,
+      ...data,
+    });
   };
 
   getUserDevices = async (userId: string): Promise<UserDevice[]> =>
-    this.deviceRepository.findManyBy({ userId });
+    this.deviceRepository.findManyBy({
+      user: new mongoose.Types.ObjectId(userId),
+    });
 
   getUserDeviceById = async (
     userId: string,
@@ -52,7 +56,7 @@ export class NotificationService {
   ): Promise<UserDevice[]> =>
     this.deviceRepository.findManyBy({
       _id: new mongoose.Types.ObjectId(deviceId),
-      userId,
+      user: new mongoose.Types.ObjectId(userId),
     });
 
   deleteUserDeviceById = async (
@@ -61,7 +65,7 @@ export class NotificationService {
   ): Promise<boolean> =>
     this.deviceRepository.deleteOnyBy({
       _id: new mongoose.Types.ObjectId(deviceId),
-      userId,
+      user: new mongoose.Types.ObjectId(userId),
     });
 
   sendNotificationToUser = async (
@@ -73,7 +77,9 @@ export class NotificationService {
       payload?: Record<string, any>;
     },
   ): Promise<void> => {
-    const devices = await this.deviceRepository.findManyBy({ userId });
+    const devices = await this.deviceRepository.findManyBy({
+      user: new mongoose.Types.ObjectId(userId),
+    });
 
     const notification = new NodeApnNotification();
     notification.topic = config.swa.appId;
