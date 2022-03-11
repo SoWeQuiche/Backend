@@ -28,11 +28,19 @@ export class NotificationService {
   registerUserDevice = async (
     userId: string,
     data: UserDeviceDto,
-  ): Promise<void> => {
-    this.deviceRepository.insert({
+  ): Promise<UserDevice> => {
+    const deviceAlreadySaved = await this.deviceRepository.findOneBy({
       userId,
-      ...data,
+      deviceId: data.deviceId,
     });
+
+    return (
+      deviceAlreadySaved ??
+      this.deviceRepository.insert({
+        userId,
+        ...data,
+      })
+    );
   };
 
   getUserDevices = async (userId: string): Promise<UserDevice[]> =>
