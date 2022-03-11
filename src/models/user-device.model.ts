@@ -13,7 +13,7 @@ export class UserDevice {
   deviceId: string;
 
   @Prop()
-  plateform: string;
+  platform: string;
 }
 
 export const DeviceSchema = SchemaFactory.createForClass(UserDevice);

@@ -8,5 +8,5 @@ export class UserDeviceDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  plateform: string;
+  platform: string;
 }
