@@ -36,6 +36,7 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.0",
     "handlebars": "^4.7.7",
+    "html-pdf": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.5",
     "mjml": "^4.12.0",
