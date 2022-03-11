@@ -12,7 +12,7 @@ export class TimeSlotRepository extends BaseRepository<TimeSlotDocument> {
     super(model);
   }
 
-  async getTimeSlotWithGroupUsers(timeSlotId: string) {
+  async getTimeSlotWithGroupUsers(timeSlotId: string): Promise<TimeSlot> {
     return this.Model.findById(timeSlotId).populate('group', 'users');
   }
 }
