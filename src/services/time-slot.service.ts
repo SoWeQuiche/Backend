@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -337,6 +338,10 @@ export class TimeSlotService {
     const timeSlot = await this.timeSlotRepository.getTimeSlotWithGroupUsers(
       timeSlotId,
     );
+
+    if (timeSlot.isUsersNotified) {
+      throw new BadRequestException('Users already notified');
+    }
 
     timeSlot.group.users.forEach((user) => {
       this.notificationService.sendNotificationToUser(user.toString(), {
