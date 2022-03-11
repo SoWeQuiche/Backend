@@ -17,6 +17,8 @@ import { UserAssociatedAttendanceGuard } from '../guards/user-associated-attenda
 import { JWTGuard } from '../guards/jwt.guard';
 import { TimeSlotGroupAdminGuard } from '../guards/time-slot-group-admin.guard';
 import { AttendanceService } from '../services/attendance.service';
+import { DefineAttendancePresenceCodeDTO } from '../dto/attendance-is-present-code.dto';
+import { DefineAttendancePresenceQrCodeDTO } from '../dto/attendance-is-present-qr-code.dto';
 
 @Controller('attendances')
 @ApiTags('Attendance')
@@ -52,6 +54,32 @@ export class AttendanceController {
     @Body() body: DefineAttendancePresenceDTO,
   ) {
     return this.attendanceService.defineAttendancePresence(attendanceId, body);
+  }
+
+  @Patch('/:attendanceId/define-presence/qr-code')
+  @UseGuards(JWTGuard, AttendanceTimeSlotGroupAdminGuard)
+  @ApiSecurity('Bearer')
+  defineAttendancePresenceQrCode(
+    @Param('attendanceId') attendanceId: string,
+    @Body() body: DefineAttendancePresenceQrCodeDTO,
+  ) {
+    return this.attendanceService.defineAttendancePresenceQrCode(
+      attendanceId,
+      body,
+    );
+  }
+
+  @Patch('/:attendanceId/define-presence/code')
+  @UseGuards(JWTGuard, AttendanceTimeSlotGroupAdminGuard)
+  @ApiSecurity('Bearer')
+  defineAttendancePresenceCode(
+    @Param('attendanceId') attendanceId: string,
+    @Body() body: DefineAttendancePresenceCodeDTO,
+  ) {
+    return this.attendanceService.defineAttendancePresenceCode(
+      attendanceId,
+      body,
+    );
   }
 
   @Patch('/:attendanceId/sign')
