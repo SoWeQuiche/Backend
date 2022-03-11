@@ -17,6 +17,8 @@ import {
   RefreshTokenSchema,
 } from '../models/refresh-token.model';
 import { RefreshTokenRepository } from '../repositories/refresh-token.repository';
+import { UserDevice, DeviceSchema } from 'src/models/user-device.model';
+import { DeviceRepository } from 'src/repositories/user-device.repository';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { RefreshTokenRepository } from '../repositories/refresh-token.repository
       { name: TimeSlot.name, schema: TimeSlotSchema },
       { name: Attendance.name, schema: AttendanceSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
+      { name: UserDevice.name, schema: DeviceSchema },
     ]),
   ],
   providers: [
@@ -38,6 +41,7 @@ import { RefreshTokenRepository } from '../repositories/refresh-token.repository
     TimeSlotRepository,
     AttendanceRepository,
     RefreshTokenRepository,
+    DeviceRepository,
   ],
   exports: [
     UserRepository,
@@ -47,6 +51,7 @@ import { RefreshTokenRepository } from '../repositories/refresh-token.repository
     TimeSlotRepository,
     AttendanceRepository,
     RefreshTokenRepository,
+    DeviceRepository,
   ],
 })
 export class MongoModule {}

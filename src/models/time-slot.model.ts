@@ -23,6 +23,9 @@ export class TimeSlot {
   @Prop({ required: true })
   signCode: string;
 
+  @Prop({ default: false })
+  isUsersNotified: boolean;
+
   @Prop({ select: false })
   __v: number;
 }
