@@ -98,9 +98,7 @@ export class AttendanceService {
   ): Promise<void> => {
     const attendance = await this.attendanceRepository.findOneById(
       attendanceId,
-      {
-        populate: ['timeSlot'],
-      },
+      { populate: ['timeSlot'] },
     );
 
     if (!attendance) {
@@ -122,9 +120,7 @@ export class AttendanceService {
   ): Promise<void> => {
     const attendance = await this.attendanceRepository.findOneById(
       attendanceId,
-      {
-        populate: ['timeSlot'],
-      },
+      { populate: ['timeSlot'] },
     );
 
     if (!attendance) {
