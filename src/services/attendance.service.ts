@@ -12,8 +12,9 @@ import { Attendance } from '../models/attendance.model';
 import { AttendanceRepository } from '../repositories/attendance.repository';
 import { SignAttendanceDTO } from '../dto/sign-attendance.dto';
 import { FileRepository } from '../repositories/file.repository';
-import { User } from '../models/user.model';
-import { GroupRepository } from '../repositories/group.repository';
+import { DefineAttendancePresenceCodeDTO } from '../dto/attendance-is-present-code.dto';
+import { DefineAttendancePresenceQrCodeDTO } from '../dto/attendance-is-present-qr-code.dto';
+import { TimeBasedToken } from '../lib/generate-tbt';
 
 @Injectable()
 export class AttendanceService {
@@ -21,7 +22,6 @@ export class AttendanceService {
     private readonly timeSlotRepository: TimeSlotRepository,
     private readonly attendanceRepository: AttendanceRepository,
     private readonly fileRepository: FileRepository,
-    private readonly groupRepository: GroupRepository,
   ) {}
 
   initTimeSlotAttendances = async (timeSlotId: string): Promise<void> => {
@@ -88,6 +88,54 @@ export class AttendanceService {
     }
 
     attendance.isPresent = set.isPresent;
+
+    await attendance.save();
+  };
+
+  defineAttendancePresenceQrCode = async (
+    attendanceId: string,
+    set: DefineAttendancePresenceQrCodeDTO,
+  ): Promise<void> => {
+    const attendance = await this.attendanceRepository.findOneById(
+      attendanceId,
+      {
+        populate: ['timeSlot'],
+      },
+    );
+
+    if (!attendance) {
+      throw new NotFoundException('Attendance not found');
+    }
+
+    if (TimeBasedToken(attendance.timeSlot.qrcodeSecret, 30, 8) !== set.code) {
+      throw new BadRequestException('Invalid code');
+    }
+
+    attendance.isPresent = true;
+
+    await attendance.save();
+  };
+
+  defineAttendancePresenceCode = async (
+    attendanceId: string,
+    set: DefineAttendancePresenceCodeDTO,
+  ): Promise<void> => {
+    const attendance = await this.attendanceRepository.findOneById(
+      attendanceId,
+      {
+        populate: ['timeSlot'],
+      },
+    );
+
+    if (!attendance) {
+      throw new NotFoundException('Attendance not found');
+    }
+
+    if (attendance.timeSlot.signCode !== set.code) {
+      throw new BadRequestException('Invalid code');
+    }
+
+    attendance.isPresent = true;
 
     await attendance.save();
   };
