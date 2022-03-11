@@ -11,12 +11,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiExtension,
-  ApiResponse,
-  ApiSecurity,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { TimeSlotOrganizationAdminGuard } from '../guards/time-slot-organization-admin.guard';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { GroupOrganizationAdminGuard } from '../guards/group-organization-admin.guard';
@@ -83,6 +78,13 @@ export class TimeSlotController {
   @ApiSecurity('Bearer')
   deleteTimeSlot(@Param('timeSlotId') timeSlotId: string) {
     return this.timeSlotService.deleteOneGroupTimeSlotById(timeSlotId);
+  }
+
+  @Post('/:timeSlotId/notify-users')
+  @UseGuards(JWTGuard, TimeSlotOrganizationAdminGuard)
+  @ApiSecurity('Bearer')
+  notifyUsersToDefinePresence(@Param('timeSlot') timeSlotId: string) {
+    return this.timeSlotService.notifyUsersToDefinePresence(timeSlotId);
   }
 
   @Post('/group/:groupId')

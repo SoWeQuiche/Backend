@@ -15,6 +15,7 @@ import { FileRepository } from '../repositories/file.repository';
 import { DefineAttendancePresenceCodeDTO } from '../dto/attendance-is-present-code.dto';
 import { DefineAttendancePresenceQrCodeDTO } from '../dto/attendance-is-present-qr-code.dto';
 import { TimeBasedToken } from '../lib/generate-tbt';
+import { NotificationService } from './notification.service';
 
 @Injectable()
 export class AttendanceService {
@@ -22,6 +23,7 @@ export class AttendanceService {
     private readonly timeSlotRepository: TimeSlotRepository,
     private readonly attendanceRepository: AttendanceRepository,
     private readonly fileRepository: FileRepository,
+    private readonly notificationService: NotificationService,
   ) {}
 
   initTimeSlotAttendances = async (timeSlotId: string): Promise<void> => {
@@ -48,7 +50,7 @@ export class AttendanceService {
     }
 
     const initAttendancesPromises = timeSlot.group.users.map((user) => {
-      this.attendanceRepository.insert({
+      return this.attendanceRepository.insert({
         timeSlot: timeSlot._id,
         user: user._id,
       });
@@ -90,6 +92,17 @@ export class AttendanceService {
     attendance.isPresent = set.isPresent;
 
     await attendance.save();
+
+    if (attendance.isPresent) {
+      this.notificationService.sendNotificationToUser(
+        attendance.user.toString(),
+        {
+          threadId: 'attendance',
+          title: 'Awaiting signature',
+          body: "You've been declared present. You may now sign.",
+        },
+      );
+    }
   };
 
   defineAttendancePresenceQrCode = async (

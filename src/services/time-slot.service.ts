@@ -15,6 +15,7 @@ import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { AWSService } from './aws.service';
 import { Response } from 'express';
 import { Stream } from 'stream';
+import { NotificationService } from './notification.service';
 
 @Injectable()
 export class TimeSlotService {
@@ -22,6 +23,7 @@ export class TimeSlotService {
     private readonly timeSlotRepository: TimeSlotRepository,
     private readonly groupRepository: GroupRepository,
     private readonly awsService: AWSService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   insertTimeSlot = async (
@@ -330,4 +332,18 @@ export class TimeSlotService {
         },
       },
     ]);
+
+  notifyUsersToDefinePresence = async (timeSlotId: string): Promise<void> => {
+    const timeSlot = await this.timeSlotRepository.getTimeSlotWithGroupUsers(
+      timeSlotId,
+    );
+
+    timeSlot.group.users.forEach((user) => {
+      this.notificationService.sendNotificationToUser(user.toString(), {
+        threadId: 'attendance',
+        title: `${timeSlot.group.name} has started`,
+        body: 'Show your presence though the app',
+      });
+    });
+  };
 }
