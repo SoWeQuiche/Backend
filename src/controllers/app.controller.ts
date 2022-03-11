@@ -7,11 +7,7 @@ import { AppService } from '../services/app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getInfos(): string {
-    return this.appService.getInfos();
-  }
-
+  @ApiExcludeEndpoint()
   @Get('apple-app-site-association')
   getAppleAppSiteAssociation() {
     return {
