@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -68,10 +69,10 @@ export class AttendanceController {
     );
   }
 
-  @Get()
+  @Delete('/:attendanceId')
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
-  getUserAttendances(@Req() request) {
-    return this.attendanceService.getUserAttendances(request.user._id);
+  deleteAttendanceById(@Param('attendanceId') attendanceId: string) {
+    return this.attendanceService.deleteAttendance(attendanceId);
   }
 }

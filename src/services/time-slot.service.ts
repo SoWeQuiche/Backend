@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as crypto from 'crypto';
 import mongoose from 'mongoose';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { TimeSlot } from '../models/time-slot.model';
-import { User } from '../models/user.model';
 import { GroupRepository } from '../repositories/group.repository';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 
@@ -40,6 +40,8 @@ export class TimeSlotService {
     return this.timeSlotRepository.insert({
       group: groupObjectId,
       ...parameters,
+      qrcodeSecret: crypto.randomUUID(),
+      signCode: Math.random().toString().slice(2, 8),
     });
   };
 
@@ -89,17 +91,58 @@ export class TimeSlotService {
   deleteOneGroupTimeSlotById = async (timeSlotId: string): Promise<boolean> =>
     this.timeSlotRepository.deleteOnyBy({ _id: timeSlotId });
 
-  getUserTimeSlots = async (userId: string) => {
-    const userGroups = await this.groupRepository.findManyBy({
-      users: {
-        $in: userId,
+  getUserTimeSlots = async (userId: string): Promise<any[]> =>
+    this.groupRepository.Model.aggregate([
+      { $match: { users: { $in: [userId] } } },
+      {
+        $lookup: {
+          from: 'timeslots',
+          localField: '_id',
+          foreignField: 'group',
+          as: 'timeSlot',
+        },
       },
-    });
-
-    const allTimeSlots = await Promise.all(
-      userGroups.map((group) => this.getAllGroupTimeSlots(group._id)),
-    );
-
-    return allTimeSlots.flat();
-  };
+      { $unwind: { path: '$timeSlot' } },
+      {
+        $addFields: {
+          userId: userId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'attendances',
+          localField: 'userId',
+          foreignField: 'user',
+          let: { userId: '$userId', timeSlotId: '$timeSlot._id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$user', '$$userId'] },
+                    { $eq: ['$timeSlot', '$$timeSlotId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'attendance',
+        },
+      },
+      { $unwind: { path: '$attendance', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          groupName: '$name',
+          organizationId: '$organization',
+          groupId: '$_id',
+          timeSlotId: '$timeSlot._id',
+          attendanceId: '$attendance._id',
+          endDate: '$timeSlot.endDate',
+          startDate: '$timeSlot.startDate',
+          isPresent: '$attendance.isPresent',
+          signDate: '$attendance.signDate',
+        },
+      },
+    ]);
 }

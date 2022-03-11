@@ -20,6 +20,7 @@ export class AppController {
         details: [
           {
             appID: 'S4J5D3N22R.com.maxencemottard.swq',
+            paths: ['/sign'],
           },
         ],
       },

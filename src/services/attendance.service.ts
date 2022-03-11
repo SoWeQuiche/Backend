@@ -12,6 +12,8 @@ import { Attendance } from '../models/attendance.model';
 import { AttendanceRepository } from '../repositories/attendance.repository';
 import { SignAttendanceDTO } from '../dto/sign-attendance.dto';
 import { FileRepository } from '../repositories/file.repository';
+import { User } from '../models/user.model';
+import { GroupRepository } from '../repositories/group.repository';
 
 @Injectable()
 export class AttendanceService {
@@ -19,6 +21,7 @@ export class AttendanceService {
     private readonly timeSlotRepository: TimeSlotRepository,
     private readonly attendanceRepository: AttendanceRepository,
     private readonly fileRepository: FileRepository,
+    private readonly groupRepository: GroupRepository,
   ) {}
 
   initTimeSlotAttendances = async (timeSlotId: string): Promise<void> => {
@@ -144,8 +147,6 @@ export class AttendanceService {
     }
   };
 
-  getUserAttendances = async (userId: string): Promise<Attendance[]> =>
-    this.attendanceRepository.Model.find({
-      user: userId,
-    }).populate('timeSlot', 'user', 'group');
+  deleteAttendance = async (attendanceId: string): Promise<any> =>
+    this.attendanceRepository.deleteOnyBy({ _id: attendanceId });
 }

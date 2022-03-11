@@ -11,7 +11,12 @@ import { FileRepository } from '../repositories/file.repository';
 import { TimeSlot, TimeSlotSchema } from '../models/time-slot.model';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { AttendanceRepository } from '../repositories/attendance.repository';
-import { AttencandeSchema, Attendance } from '../models/attendance.model';
+import { AttendanceSchema, Attendance } from '../models/attendance.model';
+import {
+  RefreshToken,
+  RefreshTokenSchema,
+} from '../models/refresh-token.model';
+import { RefreshTokenRepository } from '../repositories/refresh-token.repository';
 
 @Module({
   imports: [
@@ -21,7 +26,8 @@ import { AttencandeSchema, Attendance } from '../models/attendance.model';
       { name: Group.name, schema: GroupSchema },
       { name: Organization.name, schema: OrganizationSchema },
       { name: TimeSlot.name, schema: TimeSlotSchema },
-      { name: Attendance.name, schema: AttencandeSchema },
+      { name: Attendance.name, schema: AttendanceSchema },
+      { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
   ],
   providers: [
@@ -31,6 +37,7 @@ import { AttencandeSchema, Attendance } from '../models/attendance.model';
     FileRepository,
     TimeSlotRepository,
     AttendanceRepository,
+    RefreshTokenRepository,
   ],
   exports: [
     UserRepository,
@@ -39,6 +46,7 @@ import { AttencandeSchema, Attendance } from '../models/attendance.model';
     FileRepository,
     TimeSlotRepository,
     AttendanceRepository,
+    RefreshTokenRepository,
   ],
 })
 export class MongoModule {}
