@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Param,
@@ -8,7 +9,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AWSService } from '../services/aws.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBadRequestResponse,
@@ -19,8 +19,10 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import * as sharp from 'sharp';
 import { ApiFile } from '../decorators/ApiFile';
 import { JWTGuard } from '../guards/jwt.guard';
+import { AWSService } from '../services/aws.service';
 
 @Controller('files')
 @ApiTags('File')
@@ -37,7 +39,27 @@ export class FileController {
   @ApiBadRequestResponse()
   @ApiSecurity('Bearer')
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return this.awsService.uploadFile(file);
+    if (!file) {
+      throw new BadRequestException('Missing file');
+    }
+
+    if (file.mimetype.includes('image/')) {
+      const resizedFileBuffer = await sharp(file.buffer)
+        .resize({ width: 500 })
+        .toBuffer();
+
+      return this.awsService.uploadFile({
+        originalname: file.originalname,
+        buffer: resizedFileBuffer,
+        mimetype: file.mimetype,
+      });
+    }
+
+    return this.awsService.uploadFile({
+      originalname: file.originalname,
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+    });
   }
 
   @Get(':key')
