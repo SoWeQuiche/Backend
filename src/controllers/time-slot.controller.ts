@@ -11,11 +11,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiSecurity,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { TimeSlotOrganizationAdminGuard } from '../guards/time-slot-organization-admin.guard';
 import { TimeSlotDTO } from '../dto/time-slot.dto';
 import { GroupOrganizationAdminGuard } from '../guards/group-organization-admin.guard';
