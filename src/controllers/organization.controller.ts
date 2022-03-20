@@ -8,7 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { OrganizationService } from '../services/organization.service';
 import { JWTGuard } from '../guards/jwt.guard';
 import { AdminGuard } from '../guards/admin.guard';
@@ -24,6 +24,10 @@ export class OrganizationController {
   @Get()
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'List all the organization managed by a user',
+    description: 'List all the organization managed by a user.',
+  })
   listManagedOrganizations(@Req() request) {
     return this.organizationService.listManagedOrganizations(request.user);
   }
@@ -31,6 +35,10 @@ export class OrganizationController {
   @Post()
   @UseGuards(JWTGuard, AdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Create an organization',
+    description: 'Create an organization.',
+  })
   createOrganization(@Body() parameters: NameDTO) {
     return this.organizationService.createOrganization(parameters);
   }
@@ -38,6 +46,11 @@ export class OrganizationController {
   @Get('/:organizationId')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'List all groups of an organization',
+    description:
+      'List all groups of an organization depending of organization ID.',
+  })
   listGroups(@Param('organizationId') organizationId: string) {
     return this.organizationService.getOrganizationDetails(organizationId);
   }
@@ -45,6 +58,10 @@ export class OrganizationController {
   @Delete('/:organizationId')
   @UseGuards(JWTGuard, AdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Delete an organization',
+    description: 'Delete an organization.',
+  })
   deleteOrganization(@Param('organizationId') organizationId: string) {
     return this.organizationService.deleteOrganization(organizationId);
   }
@@ -52,6 +69,10 @@ export class OrganizationController {
   @Get('/:organizationId/users')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'List all users of an organization',
+    description: 'List all users of an organization.',
+  })
   listOrganizationUsers(@Param('organizationId') organizationId: string) {
     return this.organizationService.listOrganizationUsers(organizationId);
   }
@@ -59,6 +80,10 @@ export class OrganizationController {
   @Post('/:organizationId/users')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Add a user for an organization',
+    description: 'Add a user for an organization.',
+  })
   addUser(
     @Param('organizationId') organizationId: string,
     @Body() parameters: MailDTO,
@@ -69,6 +94,11 @@ export class OrganizationController {
   @Delete('/:organizationId/users/:userId')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Delete a user of an organization',
+    description:
+      'Delete a user of an organization depending of the user and organization ID.',
+  })
   removeUser(
     @Param('organizationId') organizationId: string,
     @Param('userId') userId: string,
@@ -79,6 +109,10 @@ export class OrganizationController {
   @Get('/:organizationId/admins')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'List all admins of an organization',
+    description: 'List all admins of an organization.',
+  })
   listOrganizationAdmins(@Param('organizationId') organizationId: string) {
     return this.organizationService.listOrganizationAdmins(organizationId);
   }
@@ -86,6 +120,10 @@ export class OrganizationController {
   @Post('/:organizationId/admins')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Promote an user for administrate an organization',
+    description: 'Give admin privilege to an user for an organization.',
+  })
   promoteToAdmin(
     @Param('organizationId') organizationId: string,
     @Body() parameters: MailDTO,
@@ -96,6 +134,10 @@ export class OrganizationController {
   @Delete('/:organizationId/admins/:userId')
   @UseGuards(JWTGuard, OrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Remove admin privilege for a user',
+    description: 'Remove admin privilege to a user of an organization.',
+  })
   removeAdmin(
     @Param('organizationId') organizationId: string,
     @Param('userId') userId: string,

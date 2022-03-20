@@ -15,6 +15,7 @@ import {
   ApiConsumes,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -38,6 +39,10 @@ export class FileController {
   @ApiUnauthorizedResponse()
   @ApiBadRequestResponse()
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Upload a file',
+    description: 'Allow to upload the image of the signature of a user.',
+  })
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('Missing file');
@@ -68,6 +73,10 @@ export class FileController {
   @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Get the signature of a user',
+    description: 'Get the signature of a user.',
+  })
   async getFile(@Param('key') key: string, @Res() res) {
     const file = await this.awsService.getFile(key);
 

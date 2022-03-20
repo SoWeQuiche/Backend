@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiExtension,
+  ApiOperation,
   ApiResponse,
   ApiSecurity,
   ApiTags,
@@ -32,6 +33,10 @@ export class TimeSlotController {
   @Get('/me')
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Get sessions for the current user',
+    description: 'Get sessions for the current user.',
+  })
   getUserTimeSlots(@Req() req) {
     return this.timeSlotService.getUserTimeSlots(req.user._id);
   }
@@ -39,6 +44,10 @@ export class TimeSlotController {
   @Get('/:timeSlotId')
   @UseGuards(JWTGuard, TimeSlotOrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Get a session',
+    description: 'Get a session depending of his ID.',
+  })
   readOneGroupTimeSlot(@Param('timeSlotId') timeSlotId: string) {
     return this.timeSlotService.getOneGroupTimeSlotById(timeSlotId);
   }
@@ -46,6 +55,10 @@ export class TimeSlotController {
   @Get('/:timeSlotId/signatures-sheet')
   @UseGuards(JWTGuard, TimeSlotOrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Export all signature of a session',
+    description: 'Export in a PDF file with all the signature of a session.',
+  })
   async getSignaturesSheet(
     @Param('timeSlotId') timeSlotId: string,
     @Res() res: Response,
@@ -69,6 +82,10 @@ export class TimeSlotController {
   @Patch('/:timeSlotId')
   @UseGuards(JWTGuard, TimeSlotOrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Update a session',
+    description: 'Change session interval.',
+  })
   updateOneGroupTimeSlot(
     @Param('timeSlotId') timeSlotId: string,
     @Body() body: TimeSlotDTO,
@@ -81,6 +98,10 @@ export class TimeSlotController {
   @Delete('/:timeSlotId')
   @UseGuards(JWTGuard, TimeSlotOrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Delete a session',
+    description: 'Delete a session.',
+  })
   deleteTimeSlot(@Param('timeSlotId') timeSlotId: string) {
     return this.timeSlotService.deleteOneGroupTimeSlotById(timeSlotId);
   }
@@ -88,6 +109,10 @@ export class TimeSlotController {
   @Post('/group/:groupId')
   @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Create a session for a group',
+    description: 'Create a session for a group.',
+  })
   createTimeSlot(@Param('groupId') groupId: string, @Body() body: TimeSlotDTO) {
     return this.timeSlotService.insertTimeSlot(groupId, body);
   }
@@ -95,6 +120,10 @@ export class TimeSlotController {
   @Get('/group/:groupId')
   @UseGuards(JWTGuard, GroupOrganizationAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Get all sessions',
+    description: 'Get all sessions a group.',
+  })
   readAllGroupTimeSlot(@Param('groupId') groupId: string) {
     return this.timeSlotService.getAllGroupTimeSlots(groupId);
   }

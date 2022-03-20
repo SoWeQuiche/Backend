@@ -9,7 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { DefineAttendancePresenceDTO } from '../dto/attendance-is-present.dto';
 import { SignAttendanceDTO } from '../dto/sign-attendance.dto';
 import { AttendanceTimeSlotGroupAdminGuard } from '../guards/attendance-time-slot-group-admin.guard';
@@ -28,6 +28,10 @@ export class AttendanceController {
   @Post('/timeslot/:timeSlotId')
   @UseGuards(JWTGuard, TimeSlotGroupAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Create an attendance',
+    description: 'Create an attendance.',
+  })
   createAttendance(@Param('timeSlotId') timeSlotId: string) {
     return this.attendanceService.initTimeSlotAttendances(timeSlotId);
   }
@@ -35,6 +39,10 @@ export class AttendanceController {
   @Get('/timeslot/:timeSlotId')
   @UseGuards(JWTGuard, TimeSlotGroupAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Get all attendances for a session',
+    description: 'Get all attendances for a session.',
+  })
   getAllTimeSlotAttendance(@Param('timeSlotId') timeSlotId: string) {
     return this.attendanceService.getAllTimeSlotAttendances(timeSlotId);
   }
@@ -42,6 +50,10 @@ export class AttendanceController {
   @Get('/:attendanceId')
   @UseGuards(JWTGuard, AttendanceTimeSlotGroupAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Get an attendance by id',
+    description: 'Get an attendance by id.',
+  })
   getAttendanceById(@Param('attendanceId') attendanceId: string) {
     return this.attendanceService.getAttendancesById(attendanceId);
   }
@@ -49,6 +61,10 @@ export class AttendanceController {
   @Patch('/:attendanceId/define-presence')
   @UseGuards(JWTGuard, AttendanceTimeSlotGroupAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Set presence for a user',
+    description: 'Set presence for a user.',
+  })
   defineAttendancePresence(
     @Param('attendanceId') attendanceId: string,
     @Body() body: DefineAttendancePresenceDTO,
@@ -59,6 +75,10 @@ export class AttendanceController {
   @Patch('/:attendanceId/define-presence/qr-code')
   @UseGuards(JWTGuard, AttendanceTimeSlotGroupAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Set presence for a user by QR Code',
+    description: 'Set presence for a user by QR Code.',
+  })
   defineAttendancePresenceQrCode(
     @Param('attendanceId') attendanceId: string,
     @Body() body: DefineAttendancePresenceQrCodeDTO,
@@ -72,6 +92,10 @@ export class AttendanceController {
   @Patch('/:attendanceId/define-presence/code')
   @UseGuards(JWTGuard, AttendanceTimeSlotGroupAdminGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Set presence for a user by Code',
+    description: 'Set presence for a user by Code.',
+  })
   defineAttendancePresenceCode(
     @Param('attendanceId') attendanceId: string,
     @Body() body: DefineAttendancePresenceCodeDTO,
@@ -85,6 +109,10 @@ export class AttendanceController {
   @Patch('/:attendanceId/sign')
   @UseGuards(JWTGuard, UserAssociatedAttendanceGuard)
   @ApiSecurity('Bearer')
+  @ApiOperation({
+    summary: 'Set presence for a user by QR Code',
+    description: 'Set presence for a user by QR Code.',
+  })
   signAttendance(
     @Param('attendanceId') attendanceId: string,
     @Body() body: SignAttendanceDTO,

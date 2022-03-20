@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiOkResponse,
+  ApiOperation,
   ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -18,6 +19,10 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Post('login')
+  @ApiOperation({
+    summary: 'Route for login',
+    description: 'Route to login an user and get his tokens.',
+  })
   loginUser(
     @Body() parameters: LoginDTO,
   ): Promise<{ token: string; refreshToken: string }> {
@@ -25,6 +30,10 @@ export class AuthenticationController {
   }
 
   @Post('refresh')
+  @ApiOperation({
+    summary: 'Route for refresh token',
+    description: 'Route for refresh the JWT token of an user.',
+  })
   refreshToken(
     @Body() parameters: RefreshTokenDTO,
   ): Promise<{ token: string; refreshToken: string }> {
@@ -32,16 +41,28 @@ export class AuthenticationController {
   }
 
   @Post('/login/apple-id')
+  @ApiOperation({
+    summary: 'Enable login by Sign-in with Apple',
+    description: 'Login an user by sign-in with Apple and get an JWT token.',
+  })
   async appleIdWebhook(@Body() body: SwaDTO): Promise<{ token: string }> {
     return this.authenticationService.loginWithApple(body);
   }
 
   @Post('activate')
+  @ApiOperation({
+    summary: 'Activate an user',
+    description: 'Activate an user and save it in DB.',
+  })
   activateUser(@Body() parameters: ActivationDTO) {
     return this.authenticationService.activateUser(parameters);
   }
 
   @Get('me')
+  @ApiOperation({
+    summary: 'Get info of the current user',
+    description: 'Get user information from his token.',
+  })
   @UseGuards(JWTGuard)
   @ApiSecurity('Bearer')
   me(@Req() request) {
