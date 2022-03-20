@@ -14,7 +14,7 @@ import config from '../config';
 import { SwaIdToken } from '../dto/swa-id-token.dto';
 import { SwaDTO } from '../dto/swa.dto';
 import { ActivationDTO } from '../dto/activation.dto';
-import { RefreshTokenDTO } from 'src/dto/refresh-token.dto';
+import { RefreshTokenDTO } from '../dto/refresh-token.dto';
 import * as cryptoJs from 'crypto-js';
 import { RefreshTokenRepository } from '../repositories/refresh-token.repository';
 import * as moment from 'moment';
